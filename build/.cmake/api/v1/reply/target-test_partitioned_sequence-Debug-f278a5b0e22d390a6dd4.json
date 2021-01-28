@@ -1,0 +1,419 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "test/test_partitioned_sequence"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"target_link_libraries",
+			"add_dependencies",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"test/CMakeLists.txt",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 10,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 11,
+				"parent" : 0
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 44,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 81,
+				"parent" : 3
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -march=native -Wall -Wextra -Wno-missing-braces -ggdb -fopenmp -g  "
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-pthread"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-implicit-fallthrough"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-unknown-pragmas"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-reorder"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-unused-local-typedefs"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-unused-variable"
+				},
+				{
+					"fragment" : "-std=c++17"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 2,
+					"define" : "BOOST_ALL_NO_LIB=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "BOOST_SYSTEM_NO_DEPRECATED"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "BOOST_THREAD_PROVIDES_EXECUTORS"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "BOOST_THREAD_USES_CHRONO"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "BOOST_THREAD_VERSION=4"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 5,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/include/pisa"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/QMX/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/mio/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/parallelstl/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/parallelstl/stdlib"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/Porter2/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/KrovetzStemmer/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/warcpp/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/wapopp/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/trecpp/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/spdlog/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/fmt/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/range-v3/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/taily/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/Catch2/single_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/rapidcheck/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/boost-cmake/boost/boost_1_67_0"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/tbb/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/GSL"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/GSL/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/external/gumbo-parser/src"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "pisa::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "gumbo-external::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "MaskedVByte::@89556154f30252d09d22"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "simdcomp::@89556154f30252d09d22"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "streamvbyte::@89556154f30252d09d22"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "FastPFor::@2725603fb970095c3235"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Boost_filesystem::@08e751b1005081c4c7c7"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Boost_system::@08e751b1005081c4c7c7"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Porter2::@6f5c6671faad36939d50"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "KrovetzStemmer::@a9311680979e134d8243"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "wapopp::@32817826f552d7b78a4c"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "fmt::@26af8659e4d2d893069d"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "rapidcheck::@d9db8831801427af80bc"
+		}
+	],
+	"id" : "test_partitioned_sequence::@36f028580bb02cc8272a",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-march=native -Wall -Wextra -Wno-missing-braces -ggdb -fopenmp -g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-rdynamic",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-Wl,-rpath,/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/pisa-pibiri/pisa/build/external/tbb_cmake_build/tbb_cmake_build_subdir_release",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "../libpisa.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "../external/rapidcheck/librapidcheck.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-pthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/tbb_cmake_build/tbb_cmake_build_subdir_release/libtbb.so.2",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/FastPFor/libFastPFor.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/libstreamvbyte.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/libMaskedVByte.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/libsimdcomp.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../gumbo-parser/lib/libgumbo.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/boost-cmake/libboost_filesystem.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/boost-cmake/libboost_system.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/Porter2/libPorter2.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/KrovetzStemmer/libKrovetzStemmer.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/wapopp/libwapopp.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../external/fmt/libfmtd.a",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "test_partitioned_sequence",
+	"nameOnDisk" : "test_partitioned_sequence",
+	"paths" : 
+	{
+		"build" : "test",
+		"source" : "test"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				3
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "test/test_partitioned_sequence.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "external/mio/include/mio/mmap.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"path" : "external/mio/include/mio/page.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"path" : "external/mio/include/mio/shared_mmap.hpp",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "EXECUTABLE"
+}
