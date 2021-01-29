@@ -8,18 +8,16 @@
 #include "global_parameters.hpp"
 #include "mappable/mapper.hpp"
 #include "memory_source.hpp"
-#include "configuration_v2.hpp"
-#include "util/util_v2.hpp"
 
 namespace pisa {
 
 struct BitVectorIndexTag;
 
 template <typename DocsSequence, typename FreqsSequence>
-struct freq_index {
+class freq_index {
   public:
     using index_layout_tag = BitVectorIndexTag;
-    
+
     freq_index() = default;
 
     explicit freq_index(MemorySource source) : m_source(std::move(source))
@@ -27,7 +25,7 @@ struct freq_index {
         mapper::map(*this, m_source.data(), mapper::map_flags::warmup);
     }
 
-    struct builder {
+    class builder {
       public:
         builder(uint64_t num_docs, global_parameters const& params)
             : m_params(params),
@@ -35,13 +33,10 @@ struct freq_index {
               m_docs_sequences(params),
               m_freqs_sequences(params)
         {}
-        
+
         template <typename DocsIterator, typename FreqsIterator>
         void add_posting_list(
-            uint64_t n, DocsIterator docs_begin, 
-            FreqsIterator freqs_begin, uint64_t occurrences,
-            pvb::configuration_v2 const& conf,
-            std::string const& index_encoding)
+            uint64_t n, DocsIterator docs_begin, FreqsIterator freqs_begin, uint64_t occurrences)
         {
             if (!n) {
                 throw std::invalid_argument("List must be nonempty");
@@ -54,51 +49,21 @@ struct freq_index {
                     if (occurrences > 1) {
                         docs_bits.append_bits(n, ceil_log2(occurrences + 1));
                     }
-                    DocsSequence::write(docs_bits, docs_begin,
-                                        m_num_docs, n,
-                                        m_params, conf);
+                    DocsSequence::write(docs_bits, docs_begin, m_num_docs, n, m_params);
                     m_docs_sequences.append(docs_bits);
                 },
                 [&] {
                     bit_vector_builder freqs_bits;
-                    FreqsSequence::write(freqs_bits, freqs_begin,
-                                        occurrences + 1, n,
-                                        m_params, conf);
+                    FreqsSequence::write(freqs_bits, freqs_begin, occurrences + 1, n, m_params);
                     m_freqs_sequences.append(freqs_bits);
                 });
         }
-        /*{
-            if (!n) throw std::invalid_argument("List must be nonempty");
-
-            task_region(*conf.executor, [&](pvb::task_region_handle& trh) {
-                trh.run([&] {
-                    bit_vector_builder docs_bits;
-                    write_gamma_nonzero(docs_bits, occurrences);
-                    if (occurrences > 1) {
-                        docs_bits.append_bits(n, ceil_log2(occurrences + 1));
-                    }
-                    DocsSequence::write(docs_bits, docs_begin,
-                                        m_num_docs, n,
-                                        m_params, conf);
-                    pvb::push_pad_v2(docs_bits, alignment);
-                    assert(docs_bits.size() % alignment == 0);
-                    m_docs_sequences.append(docs_bits);
-                });
-
-                bit_vector_builder freqs_bits;
-                FreqsSequence::write(freqs_bits, freqs_begin,
-                                        occurrences + 1, n,
-                                        m_params, conf);
-                pvb::push_pad_v2(freqs_bits, alignment);
-                assert(freqs_bits.size() % alignment == 0);
-                m_freqs_sequences.append(freqs_bits);
-            });
-        }*/
 
         void build(freq_index& sq)
         {
             sq.m_num_docs = m_num_docs;
             sq.m_params = m_params;
+
             m_docs_sequences.build(sq.m_docs_sequences);
             m_freqs_sequences.build(sq.m_freqs_sequences);
         }
@@ -114,7 +79,7 @@ struct freq_index {
 
     uint64_t num_docs() const { return m_num_docs; }
 
-    struct document_enumerator {
+    class document_enumerator {
       public:
         void reset()
         {
@@ -156,7 +121,7 @@ struct freq_index {
         typename FreqsSequence::enumerator const& freqs_enum() const { return m_freqs_enum; }
 
       private:
-        friend struct freq_index;
+        friend class freq_index;
 
         document_enumerator(
             typename DocsSequence::enumerator docs_enum, typename FreqsSequence::enumerator freqs_enum)
@@ -209,11 +174,8 @@ struct freq_index {
     template <typename Visitor>
     void map(Visitor& visit)
     {
-        visit
-            (m_params, "m_params")
-            (m_num_docs, "m_num_docs")
-            (m_docs_sequences, "m_docs_sequences")
-            (m_freqs_sequences, "m_freqs_sequences");
+        visit(m_params, "m_params")(m_num_docs, "m_num_docs")(m_docs_sequences, "m_docs_sequences")(
+            m_freqs_sequences, "m_freqs_sequences");
     }
 
   private:

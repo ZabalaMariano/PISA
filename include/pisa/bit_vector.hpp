@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <boost/range.hpp>
 
 #include "util/broadword.hpp"
 #include "util/util.hpp"
@@ -10,12 +9,9 @@
 
 namespace pisa {
 
-namespace detail {    
-    //inline size_t words_for(uint64_t n) { return ceil_div(n, 64); }
-    inline size_t words_for(uint64_t n) { auto d = uint64_t(64); return uint64_t(n + d - 1) / d; }
+namespace detail {
+    inline size_t words_for(uint64_t n) { return ceil_div(n, 64); }
 }  // namespace detail
-
-class bit_vector;
 
 class bit_vector_builder {
   public:

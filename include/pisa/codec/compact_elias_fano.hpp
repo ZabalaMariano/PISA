@@ -8,7 +8,6 @@
 #include "util/compiler_attribute.hpp"
 #include "util/likely.hpp"
 #include "util/util.hpp"
-#include "configuration_v2.hpp"
 
 namespace pisa {
 
@@ -74,8 +73,7 @@ struct compact_elias_fano {
         Iterator begin,
         uint64_t universe,
         uint64_t n,
-        global_parameters const& params,
-        pvb::configuration_v2 const& conf)
+        global_parameters const& params)
     {
         uint64_t base_offset = bvb.size();
         offsets of(base_offset, universe, n, params);

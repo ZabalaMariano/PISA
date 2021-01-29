@@ -21,15 +21,11 @@
 #include "sequence/positive_sequence.hpp"
 #include "sequence/uniform_partitioned_sequence.hpp"
 
-//#include "block_codecs.hpp"
-//#include "partitioned_sequence.hpp"
-#include "sequence/partitioned_vb_sequence.hpp"
-#include "sequence/positive_sequence_v2.hpp"
-//#include "indexed_sequence.hpp"
-//#include "uniform_partitioned_sequence.hpp"
-//#include "block_sequence.hpp"
-//#include "uncompressed_upper_bounds.hpp"
-//#include "compact_ranked_bitvector.hpp"
+//opt_vb
+#include "opt_vb/block_codecs_opt_vb.hpp"
+#include "opt_vb/freq_index_opt_vb.hpp"
+#include "opt_vb/partitioned_vb_sequence_opt_vb.hpp"
+#include "opt_vb/positive_sequence_opt_vb.hpp"
 
 namespace pisa {
 using ef_index = freq_index<compact_elias_fano, positive_sequence<strict_elias_fano>>;
@@ -54,10 +50,10 @@ using block_simple16_index = block_freq_index<pisa::simple16_block>;
 using block_simdbp_index = block_freq_index<pisa::simdbp_block>;
 
 using opt_vb_index =
-    freq_index<
-        partitioned_vb_sequence<maskedvbyte_block>,
-        positive_sequence_v2<
-            partitioned_vb_sequence<maskedvbyte_block>
+    pvb::freq_index_opt_vb<
+        pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>,
+        pvb::positive_sequence_opt_vb<
+            pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>
         >
     >;
 

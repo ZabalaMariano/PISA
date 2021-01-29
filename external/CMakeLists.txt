@@ -3,6 +3,15 @@ EXECUTE_PROCESS(COMMAND git submodule update --init
                 OUTPUT_QUIET
         )
 
+# Add succinct
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/succinct EXCLUDE_FROM_ALL)
+
+# stxxl
+add_definitions(-DSTXXL_VERBOSE_LEVEL=-10) # suppress messages to stdout
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/stxxl)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${STXXL_CXX_FLAGS}")
+include_directories(${STXXL_INCLUDE_DIRS})
+
 # Add FastPFor
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FastPFor EXCLUDE_FROM_ALL)
 target_compile_options(FastPFor PRIVATE -Wno-cast-align)

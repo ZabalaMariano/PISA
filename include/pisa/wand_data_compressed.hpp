@@ -66,9 +66,7 @@ class uniform_score_compressor {
             }
             bit_vector_builder docs_bits;
             write_gamma_nonzero(docs_bits, n);
-            uint64_t F = 64;
-            pvb::configuration_v2 conf(F);
-            Sequence::write(docs_bits, temp.begin(), m_num_docs, n, m_params, conf);
+            Sequence::write(docs_bits, temp.begin(), m_num_docs, n, m_params);
             m_docs_sequences.append(docs_bits);
         }
 

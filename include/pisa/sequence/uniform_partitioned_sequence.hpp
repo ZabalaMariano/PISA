@@ -7,7 +7,6 @@
 #include "global_parameters.hpp"
 #include "sequence/indexed_sequence.hpp"
 #include "util/util.hpp"
-#include "configuration_v2.hpp"
 
 namespace pisa {
 
@@ -22,8 +21,7 @@ struct uniform_partitioned_sequence {
         Iterator begin,
         uint64_t universe,
         uint64_t n,
-        global_parameters const& params,
-        pvb::configuration_v2 const& conf)
+        global_parameters const& params)
     {
         assert(n > 0);
         uint64_t partition_size = uint64_t(1) << params.log_partition_size;
@@ -87,12 +85,9 @@ struct uniform_partitioned_sequence {
                 cur_base = upper_bound + 1;
             }
 
-            uint64_t F = 64;
-            pvb::configuration_v2 conf(F);
-
             bit_vector_builder bv_upper_bounds;
             compact_elias_fano::write(
-                bv_upper_bounds, upper_bounds.begin(), universe, partitions + 1, params, conf);
+                bv_upper_bounds, upper_bounds.begin(), universe, partitions + 1, params);
 
             uint64_t endpoint_bits = ceil_log2(bv_sequences.size() + 1);
             write_gamma(bvb, endpoint_bits);

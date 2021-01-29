@@ -9,7 +9,6 @@
 #include "mappable/mapper.hpp"
 #include "memory_source.hpp"
 #include "temporary_directory.hpp"
-#include "configuration_v2.hpp"
 
 namespace pisa {
 
@@ -38,9 +37,7 @@ class block_freq_index {
             uint64_t n,
             DocsIterator docs_begin,
             FreqsIterator freqs_begin,
-            uint64_t, /* occurrences */
-            pvb::configuration_v2 const& conf,
-            std::string const& index_encoding)
+            uint64_t /* occurrences */)
         {
             if (!n) {
                 throw std::invalid_argument("List must be nonempty");
@@ -73,17 +70,13 @@ class block_freq_index {
             sq.m_num_docs = m_num_docs;
             sq.m_lists.steal(m_lists);
 
-            uint64_t F = 64;
-            pvb::configuration_v2 conf(F);
-
             bit_vector_builder bvb;
             compact_elias_fano::write(
                 bvb,
                 m_endpoints.begin(),
                 sq.m_lists.size(),
                 sq.m_size,
-                m_params,
-                conf);  // XXX
+                m_params);  // XXX
             bit_vector(&bvb).swap(sq.m_endpoints);
         }
 
@@ -150,12 +143,9 @@ class block_freq_index {
             freezer(size, "size");
             freezer(m_num_docs, "m_num_docs");
 
-            uint64_t F = 64;
-            pvb::configuration_v2 conf(F);
-
             bit_vector_builder bvb;
             compact_elias_fano::write(
-                bvb, m_endpoints.begin(), m_postings_bytes_written, size, m_params, conf);
+                bvb, m_endpoints.begin(), m_postings_bytes_written, size, m_params);
             bit_vector endpoints(&bvb);
             freezer(endpoints, "endpoints");
 

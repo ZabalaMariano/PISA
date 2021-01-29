@@ -28,12 +28,9 @@ class bitvector_collection {
             sq.m_size = m_endpoints.size() - 1;
             bit_vector(&m_bitvectors).swap(sq.m_bitvectors);
 
-            uint64_t F = 64;
-            pvb::configuration_v2 conf(F);
-
             bit_vector_builder bvb;
             compact_elias_fano::write(
-                bvb, m_endpoints.begin(), m_bitvectors.size(), sq.m_size, m_params, conf);
+                bvb, m_endpoints.begin(), m_bitvectors.size(), sq.m_size, m_params);
             bit_vector(&bvb).swap(sq.m_endpoints);
         }
 

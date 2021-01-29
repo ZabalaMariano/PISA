@@ -10,7 +10,6 @@
 #include "optimal_partition.hpp"
 #include "sequence/indexed_sequence.hpp"
 #include "util/util.hpp"
-#include "configuration_v2.hpp"
 
 namespace pisa {
 
@@ -25,8 +24,7 @@ struct partitioned_sequence {
         Iterator begin,
         uint64_t universe,
         uint64_t n,
-        global_parameters const& params,
-        pvb::configuration_v2 const& conf)
+        global_parameters const& params)
     {
         assert(n > 0);
         auto partition = compute_partition(begin, universe, n, params);
@@ -93,15 +91,12 @@ struct partitioned_sequence {
                 cur_base = upper_bound + 1;
             }
 
-            uint64_t F = 64;
-            pvb::configuration_v2 conf(F);
-
             bit_vector_builder bv_sizes;
-            compact_elias_fano::write(bv_sizes, partition.begin(), n, partitions - 1, params, conf);
+            compact_elias_fano::write(bv_sizes, partition.begin(), n, partitions - 1, params);
 
             bit_vector_builder bv_upper_bounds;
             compact_elias_fano::write(
-                bv_upper_bounds, upper_bounds.begin(), universe, partitions + 1, params, conf);
+                bv_upper_bounds, upper_bounds.begin(), universe, partitions + 1, params);
 
             uint64_t endpoint_bits = ceil_log2(bv_sequences.size() + 1);
             write_gamma(bvb, endpoint_bits);

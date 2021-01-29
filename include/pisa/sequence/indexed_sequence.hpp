@@ -7,7 +7,6 @@
 #include "codec/compact_elias_fano.hpp"
 #include "codec/compact_ranked_bitvector.hpp"
 #include "global_parameters.hpp"
-#include "configuration_v2.hpp"
 
 namespace pisa {
 
@@ -46,8 +45,7 @@ struct indexed_sequence {
         Iterator begin,
         uint64_t universe,
         uint64_t n,
-        global_parameters const& params,
-        pvb::configuration_v2 const& conf)
+        global_parameters const& params)
     {
         uint64_t best_cost = all_ones_sequence::bitsize(params, universe, n);
         int best_type = all_ones;

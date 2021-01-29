@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../bit_vector.hpp"
-#include "../util/broadword.hpp"
+#include "bit_vector.hpp"
+#include "util/broadword.hpp"
 #include <stdexcept>
 
-#include "../global_parameters.hpp"
-#include "../util/compiler_attribute.hpp"
-#include "../util/likely.hpp"
-#include "../util/util.hpp"
+#include "global_parameters.hpp"
+#include "util/compiler_attribute.hpp"
+#include "util/likely.hpp"
+#include "util/util.hpp"
 
 namespace pisa {
 
@@ -48,15 +48,6 @@ struct compact_ranked_bitvector {
         uint64_t bits_offset;
         uint64_t end;
     };
-
-    static const int type = 1;
-
-    // cost of adding the posting x to a
-    // bitvector of universe [universe]
-    static inline uint64_t posting_cost(posting_type x, uint64_t base) {
-        assert(x >= base);
-        return x - base;
-    }
 
     static PISA_FLATTEN_FUNC uint64_t
     bitsize(global_parameters const& params, uint64_t universe, uint64_t n)
