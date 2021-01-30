@@ -8,8 +8,13 @@
 
 namespace pvb {
 
+struct BitVectorIndexTag;
+
     template<typename DocsSequence, typename FreqsSequence>
     struct freq_index_opt_vb {
+
+        using index_layout_tag = BitVectorIndexTag;
+
         freq_index_opt_vb()
             : m_params()
             , m_num_docs(0)
@@ -148,7 +153,7 @@ namespace pvb {
             typename FreqsSequence::enumerator m_freqs_enum;
         };
 
-        document_enumerator operator[](size_t i)
+        document_enumerator operator[](size_t i) const
         {
             assert(i < size());
             auto docs_it = m_docs_sequences.get(m_params, i);
@@ -177,7 +182,7 @@ namespace pvb {
             // XXX implement this
         }
 
-        global_parameters_opt_vb& params() {
+        global_parameters_opt_vb const& params() const {
             return m_params;
         }
 

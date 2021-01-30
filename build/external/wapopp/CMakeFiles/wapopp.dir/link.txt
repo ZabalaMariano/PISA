@@ -1,0 +1,2 @@
+/usr/bin/ar qc libwapopp.a  CMakeFiles/wapopp.dir/src/wapopp.cpp.o
+/usr/bin/ranlib libwapopp.a

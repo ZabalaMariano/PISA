@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/KrovetzStemmer/include/KrovetzStemmer/KrovetzStemmer.cpp
+KrovetzStemmer.hpp
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/KrovetzStemmer/include/KrovetzStemmer/KrovetzStemmer.hpp
+cstdlib
+-
+cstring
+-
+iostream
+-
+
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/KrovetzStemmer/include/KrovetzStemmer/KrovetzStemmer.hpp
+iostream
+-
+cstring
+-
+string
+-
+hash_map
+-
+unordered_map
+-
+

@@ -1,0 +1,1 @@
+cmd='./autogen.sh;&&;./configure;--prefix=/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/gumbo-parser'

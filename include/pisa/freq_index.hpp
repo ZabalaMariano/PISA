@@ -9,6 +9,8 @@
 #include "mappable/mapper.hpp"
 #include "memory_source.hpp"
 
+#include "opt_vb/configuration_opt_vb.hpp"
+
 namespace pisa {
 
 struct BitVectorIndexTag;
@@ -36,7 +38,8 @@ class freq_index {
 
         template <typename DocsIterator, typename FreqsIterator>
         void add_posting_list(
-            uint64_t n, DocsIterator docs_begin, FreqsIterator freqs_begin, uint64_t occurrences)
+            uint64_t n, DocsIterator docs_begin, FreqsIterator freqs_begin, 
+            uint64_t occurrences, pvb::configuration_opt_vb const& conf)
         {
             if (!n) {
                 throw std::invalid_argument("List must be nonempty");

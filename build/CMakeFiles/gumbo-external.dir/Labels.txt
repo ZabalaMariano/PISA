@@ -1,0 +1,13 @@
+# Target labels
+ gumbo-external
+# Source files and their labels
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/CMakeFiles/gumbo-external
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/CMakeFiles/gumbo-external.rule
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/CMakeFiles/gumbo-external-complete.rule
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/gumbo-external-prefix/src/gumbo-external-stamp/gumbo-external-install.rule
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/gumbo-external-prefix/src/gumbo-external-stamp/gumbo-external-mkdir.rule
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/gumbo-external-prefix/src/gumbo-external-stamp/gumbo-external-download.rule
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/gumbo-external-prefix/src/gumbo-external-stamp/gumbo-external-update.rule
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/gumbo-external-prefix/src/gumbo-external-stamp/gumbo-external-patch.rule
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/gumbo-external-prefix/src/gumbo-external-stamp/gumbo-external-configure.rule
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/gumbo-external-prefix/src/gumbo-external-stamp/gumbo-external-build.rule

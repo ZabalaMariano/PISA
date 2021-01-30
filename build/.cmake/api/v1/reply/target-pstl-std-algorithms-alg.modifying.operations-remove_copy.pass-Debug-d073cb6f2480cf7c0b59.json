@@ -1,0 +1,227 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "external/parallelstl/test/pstl-std-algorithms-alg.modifying.operations-remove_copy.pass"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"target_link_libraries",
+			"add_definitions",
+			"include_directories",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"external/parallelstl/test/CMakeLists.txt",
+			"external/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 38,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 40,
+				"parent" : 0
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 10,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 13,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 24,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 34,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 50,
+				"parent" : 3
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 39,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -fopenmp -g  "
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-unknown-pragmas"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-reorder"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-unused-local-typedefs"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wno-unused-variable"
+				},
+				{
+					"fragment" : "-std=c++17"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 4,
+					"define" : "STXXL_VERBOSE_LEVEL=-10"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 5,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/stxxl/include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/external/stxxl/include"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/streamvbyte/include"
+				},
+				{
+					"backtrace" : 7,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/MaskedVByte/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/simdcomp/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/parallelstl/test"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/parallelstl/test/../stdlib"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/parallelstl/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/parallelstl/stdlib"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/tbb/include"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"id" : "pstl-std-algorithms-alg.modifying.operations-remove_copy.pass::@d4e597d23cd67314bf95",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-fopenmp -g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-Wl,-rpath,/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/external/tbb_cmake_build/tbb_cmake_build_subdir_release",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "../../tbb_cmake_build/tbb_cmake_build_subdir_release/libtbb.so.2",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "pstl-std-algorithms-alg.modifying.operations-remove_copy.pass",
+	"nameOnDisk" : "pstl-std-algorithms-alg.modifying.operations-remove_copy.pass",
+	"paths" : 
+	{
+		"build" : "external/parallelstl/test",
+		"source" : "external/parallelstl/test"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "external/parallelstl/test/std/algorithms/alg.modifying.operations/remove_copy.pass.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}

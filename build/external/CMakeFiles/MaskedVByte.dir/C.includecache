@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../external/MaskedVByte/include/varintdecode.h
+inttypes.h
+-
+stdint.h
+-
+stddef.h
+-
+
+../external/MaskedVByte/include/varintencode.h
+stdint.h
+-
+stddef.h
+-
+
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/MaskedVByte/src/varintdecode.c
+varintdecode.h
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/MaskedVByte/src/varintdecode.h
+x86intrin.h
+-
+intrin.h
+-
+
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/MaskedVByte/src/varintencode.c
+varintencode.h
+/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/external/MaskedVByte/src/varintencode.h
+

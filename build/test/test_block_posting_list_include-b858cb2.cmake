@@ -1,0 +1,5 @@
+if(EXISTS "/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/test/test_block_posting_list_tests-b858cb2.cmake")
+  include("/home/zabala/Documents/Back-up/UNLU/11-Decimo-primer-Cuatrimestre/Recuperacion-de-informacion/Proyecto-final-RI/Repo-pisa-pibiri/PISA/build/test/test_block_posting_list_tests-b858cb2.cmake")
+else()
+  add_test(test_block_posting_list_NOT_BUILT-b858cb2 test_block_posting_list_NOT_BUILT-b858cb2)
+endif()

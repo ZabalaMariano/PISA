@@ -1,0 +1,1 @@
+/usr/bin/c++   -fopenmp -Wall -Wcast-align -ggdb  -lm  -DHAVE_CXX0X -march=native  -rdynamic CMakeFiles/Porter2Test.dir/Porter2Test.cpp.o  -o ../../../bin/Porter2Test  ../libPorter2.a ../external/googletest/googlemock/gtest/libgtestd.a ../external/googletest/googlemock/libgmockd.a ../external/googletest/googlemock/gtest/libgtestd.a -pthread 

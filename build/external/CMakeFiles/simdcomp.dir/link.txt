@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsimdcomp.a  CMakeFiles/simdcomp.dir/simdcomp/src/simdbitpacking.c.o CMakeFiles/simdcomp.dir/simdcomp/src/simdcomputil.c.o
+/usr/bin/ranlib libsimdcomp.a

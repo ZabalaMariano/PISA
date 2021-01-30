@@ -1,0 +1,2 @@
+/usr/bin/ar qc libpisa.a  CMakeFiles/pisa.dir/src/memory_source.cpp.o CMakeFiles/pisa.dir/src/query/queries.cpp.o CMakeFiles/pisa.dir/src/tokenizer.cpp.o
+/usr/bin/ranlib libpisa.a

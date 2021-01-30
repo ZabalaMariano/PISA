@@ -1,0 +1,1 @@
+/usr/bin/c++   -fopenmp -Wall -Wcast-align -ggdb  -lm  -std=c++11 -DHAVE_CXX0X -march=native  -rdynamic CMakeFiles/qmxTest.dir/qmxTest.cpp.o  -o ../../../bin/qmxTest 
