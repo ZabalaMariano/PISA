@@ -1,2 +1,0 @@
-/usr/bin/ar qc libPorter2.a  CMakeFiles/Porter2.dir/src/Porter2.cpp.o
-/usr/bin/ranlib libPorter2.a

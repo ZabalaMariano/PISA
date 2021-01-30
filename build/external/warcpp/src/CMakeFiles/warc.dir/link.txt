@@ -1,1 +1,0 @@
-/usr/bin/c++   -fopenmp -Wall -Wcast-align -ggdb  -lm  -DHAVE_CXX0X -march=native  -rdynamic CMakeFiles/warc.dir/warc.cpp.o  -o ../../../bin/warc 

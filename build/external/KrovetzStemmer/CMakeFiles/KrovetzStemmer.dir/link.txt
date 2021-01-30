@@ -1,2 +1,0 @@
-/usr/bin/ar qc libKrovetzStemmer.a  CMakeFiles/KrovetzStemmer.dir/include/KrovetzStemmer/KrovetzStemmer.cpp.o
-/usr/bin/ranlib libKrovetzStemmer.a

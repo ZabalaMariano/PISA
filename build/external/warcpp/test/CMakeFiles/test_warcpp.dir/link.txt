@@ -1,1 +1,0 @@
-/usr/bin/c++   -fopenmp -Wall -Wcast-align -ggdb  -lm  -DHAVE_CXX0X -march=native  -rdynamic CMakeFiles/test_warcpp.dir/test_warcpp.cpp.o  -o ../../../bin/test_warcpp 
