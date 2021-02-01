@@ -18,6 +18,8 @@
 #include "sequence/uniform_partitioned_sequence.hpp"
 #include "temporary_directory.hpp"
 
+#include "opt_vb/global_parameters_opt_vb.hpp"
+
 template <typename DocsSequence, typename FreqsSequence>
 void test_freq_index()
 {
@@ -25,9 +27,10 @@ void test_freq_index()
     auto idx_path = (tmpdir.path() / "coll.bin").string();
 
     pisa::global_parameters params;
+    pvb::global_parameters_opt_vb params_opt_vb;
     uint64_t universe = 20000;
     using collection_type = pisa::freq_index<DocsSequence, FreqsSequence>;
-    typename collection_type::builder b(universe, params);
+    typename collection_type::builder b(universe, params, params_opt_vb);
 
     using vec_type = std::vector<uint64_t>;
     std::vector<std::pair<vec_type, vec_type>> posting_lists(30);

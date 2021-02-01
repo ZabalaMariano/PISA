@@ -1,7 +1,7 @@
 #pragma once
 
 #include "global_parameters_opt_vb.hpp"
-#include "configuration_opt_vb.hpp"
+#include "configuration.hpp"//#include "configuration_opt_vb.hpp"
 #include "strict_sequence_opt_vb.hpp"
 #include "util_opt_vb.hpp"
 
@@ -14,11 +14,10 @@ namespace pvb {
         typedef typename base_sequence_type::enumerator base_sequence_enumerator;
 
         template <typename Iterator>
-        static void write(succinct::bit_vector_builder& bvb,
+        static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const& params,
-                          configuration_opt_vb const& conf)
+                          global_parameters_opt_vb const& params)//configuration_opt_vb const& conf)
         {
             assert(n > 0);
             std::vector<uint64_t> prefixes;
@@ -32,10 +31,10 @@ namespace pvb {
             base_sequence_type::write(bvb,
                                       prefixes.begin(),
                                       universe, n,
-                                      params, conf);
+                                      params);
         }
 
-        static void decode(succinct::bit_vector const& bv,
+        static void decode(pisa::bit_vector const& bv,
                            uint32_t* out, uint64_t offset,
                            uint64_t universe, uint64_t n)
         {
@@ -50,9 +49,9 @@ namespace pvb {
             enumerator()
             {}
 
-            enumerator(succinct::bit_vector const& bv, uint64_t offset,
+            enumerator(pisa::bit_vector const& bv, uint64_t offset,
                        uint64_t universe, uint64_t n,
-                       global_parameters_opt_vb& params)
+                       global_parameters_opt_vb const& params)
                 : m_base_enum(bv, offset, universe, n, params)
                 , m_position(m_base_enum.size())
             {}

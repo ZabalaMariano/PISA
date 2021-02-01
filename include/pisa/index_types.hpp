@@ -50,7 +50,7 @@ using block_simple16_index = block_freq_index<pisa::simple16_block>;
 using block_simdbp_index = block_freq_index<pisa::simdbp_block>;
 
 using opt_vb_index =
-    pvb::freq_index_opt_vb<
+    freq_index_opt_vb<
         pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>,
         pvb::positive_sequence_opt_vb<
             pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>

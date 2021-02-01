@@ -14,6 +14,8 @@
 #include "temporary_directory.hpp"
 #include "test_common.hpp"
 
+#include "opt_vb/global_parameters_opt_vb.hpp"
+
 using namespace pisa;
 
 // NOLINTNEXTLINE(hicpp-explicit-conversions)
@@ -27,7 +29,7 @@ TEST_CASE("Stream builder for block index", "[index]")
     auto actual_path = tmp.path() / "actual";
 
     // Build the non-streaming way
-    typename index_type::builder builder(collection.num_docs(), global_parameters{});
+    typename index_type::builder builder(collection.num_docs(), global_parameters{}, pvb::global_parameters_opt_vb{});
     for (auto const& plist: collection) {
         uint64_t freqs_sum = std::accumulate(plist.freqs.begin(), plist.freqs.end(), uint64_t(0));
         builder.add_posting_list(

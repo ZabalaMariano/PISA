@@ -136,6 +136,7 @@ void compress_index(
     std::optional<std::string> const& wand_data_filename,
     ScorerParams const& scorer_params,
     bool quantized,
+    std::string const& index_encoding
     )
 {
     if constexpr (std::is_same_v<typename CollectionType::index_layout_tag, BlockIndexTag>) {
@@ -165,14 +166,10 @@ void compress_index(
     spdlog::info("Processing {} documents", input.num_docs());
     double tick = get_time_usecs();
 
-    uint64_t F = 64;
-    pvb::configuration_opt_vb const& conf_opt_vb(F);
-    if constexpr (std::is_same_v<typename CollectionType, opt_vb_index>) {
-        params_opt_vb.log_partition_size = conf_opt_vb.log_partition_size;
-        typename CollectionType::builder builder(input.num_docs(), params_opt_vb);
-    } else {
-        typename CollectionType::builder builder(input.num_docs(), params);
-    }
+    //uint64_t F = 64;
+    //pvb::configuration_opt_vb const& conf_opt_vb(F);
+    params_opt_vb.log_partition_size = configuration::get().log_partition_size;//params_opt_vb.log_partition_size = conf_opt_vb.log_partition_size;
+    typename CollectionType::builder builder(input.num_docs(),params,params_opt_vb);
     
     size_t postings = 0;
     {
@@ -208,11 +205,11 @@ void compress_index(
                 assert(quants.size() == size);
                 uint64_t quants_sum =
                     std::accumulate(quants.begin(), quants.begin() + quants.size(), uint64_t(0));
-                builder.add_posting_list(size, plist.docs.begin(), quants.begin(), quants_sum, conf_opt_vb);
+                builder.add_posting_list(size, plist.docs.begin(), quants.begin(), quants_sum);//conf_opt_vb);
             } else {
                 uint64_t freqs_sum =
                     std::accumulate(plist.freqs.begin(), plist.freqs.begin() + size, uint64_t(0));
-                builder.add_posting_list(size, plist.docs.begin(), plist.freqs.begin(), freqs_sum, conf_opt_vb);
+                builder.add_posting_list(size, plist.docs.begin(), plist.freqs.begin(), freqs_sum);//conf_opt_vb);
             }
 
             progress.update(1);
@@ -271,7 +268,8 @@ void compress(
             index_encoding,                                                      \
             wand_data_filename,                                                  \
             scorer_params,                                                       \
-            quantize);                                                           \
+            quantize,                                                            \
+            index_encoding);                                                     \
         /**/
         BOOST_PP_SEQ_FOR_EACH(LOOP_BODY, _, PISA_INDEX_TYPES);
 #undef LOOP_BODY

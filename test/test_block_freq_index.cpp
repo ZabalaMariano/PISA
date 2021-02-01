@@ -21,13 +21,16 @@
 #include <cstdlib>
 #include <vector>
 
+#include "opt_vb/global_parameters_opt_vb.hpp"
+
 template <typename BlockCodec>
 void test_block_freq_index()
 {
     pisa::global_parameters params;
+    pvb::global_parameters_opt_vb params_opt_vb;
     uint64_t universe = 20000;
     using collection_type = pisa::block_freq_index<BlockCodec>;
-    typename collection_type::builder b(universe, params);
+    typename collection_type::builder b(universe, params, params_opt_vb);
 
     using vec_type = std::vector<uint64_t>;
     std::vector<std::pair<vec_type, vec_type>> posting_lists(30);

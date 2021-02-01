@@ -2,8 +2,8 @@
 
 #include <stdexcept>
 
-#include "succinct/bit_vector.hpp"
-#include "succinct/broadword.hpp"
+#include "bit_vector.hpp"
+#include "../util/broadword.hpp"
 
 #include "./global_parameters_opt_vb.hpp"
 #include "./typedefs.hpp"
@@ -26,7 +26,7 @@ namespace pvb {
                 , log_sampling0(params.ef_log_sampling0)
                 , log_sampling1(params.ef_log_sampling1)
 
-                , lower_bits(universe > n ? succinct::broadword::msb(universe / n) : 0)
+                , lower_bits(universe > n ? pisa::broadword::msb(universe / n) : 0)
                 , mask((uint64_t(1) << lower_bits) - 1)
                   // pad with a zero on both sides as sentinels
                 , higher_bits_length(n + (universe >> lower_bits) + 2)
@@ -62,11 +62,11 @@ namespace pvb {
             uint64_t end;
         };
 
-        static void align(succinct::bit_vector_builder& bvb) {
+        static void align(pisa::bit_vector_builder& bvb) {
             (void) bvb;
         }
 
-        static void align(succinct::bit_vector::enumerator& it) {
+        static void align(pisa::bit_vector::enumerator& it) {
             (void) it;
         }
 
@@ -85,12 +85,12 @@ namespace pvb {
         }
 
         template<typename Iterator>
-        static void write(succinct::bit_vector_builder& bvb,
+        static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
                           global_parameters_opt_vb const& params)
         {
-            using succinct::util::ceil_div;
+            using pisa::ceil_div;
             uint64_t base_offset = bvb.size();
             offsets of(base_offset, universe, n, params);
             // initialize all the bits to 0
@@ -161,7 +161,7 @@ namespace pvb {
             enumerator()
             {}
 
-            enumerator(succinct::bit_vector const& bv, uint64_t offset,
+            enumerator(pisa::bit_vector const& bv, uint64_t offset,
                        uint64_t universe, uint64_t n,
                        global_parameters_opt_vb const& params)
                 : m_bv(&bv)
@@ -185,7 +185,7 @@ namespace pvb {
                     if (DS2I_UNLIKELY(m_position == size())) {
                         m_value = m_of.universe;
                     } else {
-                        succinct::bit_vector::unary_enumerator he = m_high_enumerator;
+                        pisa::bit_vector::unary_enumerator he = m_high_enumerator;
                         for (size_t i = 0; i < skip; ++i) {
                             he.next();
                         }
@@ -299,7 +299,7 @@ namespace pvb {
                     uint64_t ptr = position >> m_of.log_sampling1;
                     uint64_t high_pos = pointer1(ptr);
                     uint64_t high_rank = ptr << m_of.log_sampling1;
-                    m_high_enumerator = succinct::bit_vector::unary_enumerator
+                    m_high_enumerator = pisa::bit_vector::unary_enumerator
                         (*m_bv, m_of.higher_bits_offset + high_pos);
                     to_skip = position - high_rank;
                 }
@@ -333,7 +333,7 @@ namespace pvb {
                     uint64_t high_pos = pointer0(ptr);
                     uint64_t high_rank0 = ptr << m_of.log_sampling0;
 
-                    m_high_enumerator = succinct::bit_vector::unary_enumerator
+                    m_high_enumerator = pisa::bit_vector::unary_enumerator
                         (*m_bv, m_of.higher_bits_offset + high_pos);
                     to_skip = high_lower_bound - high_rank0;
                 }
@@ -400,9 +400,9 @@ namespace pvb {
                 }
 
                 enumerator& e;
-                succinct::bit_vector::unary_enumerator high_enumerator;
+                pisa::bit_vector::unary_enumerator high_enumerator;
                 uint64_t high_base, lower_bits, lower_base, mask;
-                succinct::bit_vector const& bv;
+                pisa::bit_vector const& bv;
             };
 
             inline uint64_t pointer(uint64_t offset, uint64_t i) const
@@ -426,12 +426,12 @@ namespace pvb {
                 return pointer(m_of.pointers1_offset, i);
             }
 
-            succinct::bit_vector const* m_bv;
+            pisa::bit_vector const* m_bv;
             offsets m_of;
 
             uint64_t m_position;
             uint64_t m_value;
-            succinct::bit_vector::unary_enumerator m_high_enumerator;
+            pisa::bit_vector::unary_enumerator m_high_enumerator;
         };
 
     };

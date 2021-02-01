@@ -1,9 +1,9 @@
 #pragma once
 
 #include "./partitioned_sequence_enumerator_opt_vb.hpp"
-#include "./configuration_opt_vb.hpp"
+#include "configuration.hpp"//#include "./configuration_opt_vb.hpp"
 #include "./global_parameters_opt_vb.hpp"
-#include "./integer_codes_opt_vb.hpp"
+#include "../codec/integer_codes.hpp"
 #include "./util_opt_vb.hpp"
 #include "./indexed_sequence_opt_vb.hpp"
 
@@ -27,18 +27,17 @@ namespace pvb {
         typedef varintg8iu_block RBBlock;
 
         template<typename Iterator>
-        static void write(succinct::bit_vector_builder& bvb,
+        static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const& params,
-                          configuration_opt_vb const& conf)
+                          global_parameters_opt_vb const& params)//configuration_opt_vb const& conf)
         {
             assert(n > 0);
-            auto partition = optimizer_opt_vb<VByteBlockType>::compute_partition(begin, n, conf);
+            auto partition = optimizer_opt_vb<VByteBlockType>::compute_partition(begin, n);
             size_t partitions = partition.size();
             assert(partitions > 0);
 
-            write_gamma_nonzero(bvb, partitions);
+            pisa::write_gamma_nonzero(bvb, partitions);
 
             if (partitions == 1) {
                 auto const& singleton = partition.front();
@@ -49,9 +48,9 @@ namespace pvb {
                 // write universe only if non-singleton and not tight
                 if (n > 1) {
                     if (base + relative_universe + 1 == universe) {
-                        write_delta(bvb, 0); // tight universe
+                        pisa::write_delta(bvb, 0); // tight universe
                     } else {
-                        write_delta(bvb, relative_universe);
+                        pisa::write_delta(bvb, relative_universe);
                     }
                 }
 
@@ -61,7 +60,7 @@ namespace pvb {
                             n, params);
 
             } else {
-                succinct::bit_vector_builder bv_sequences;
+                pisa::bit_vector_builder bv_sequences;
                 std::vector<uint64_t> sizes;
                 sizes.reserve(partitions);
                 std::vector<uint64_t> endpoints;
@@ -101,15 +100,15 @@ namespace pvb {
                 assert(endpoints.size() == partitions);
                 assert(upper_bounds.size() == partitions + 1);
 
-                succinct::bit_vector_builder bv_sizes;
-                succinct::bit_vector_builder bv_upper_bounds;
+                pisa::bit_vector_builder bv_sizes;
+                pisa::bit_vector_builder bv_upper_bounds;
 
                 compact_elias_fano_opt_vb::write(bv_sizes, sizes.begin(),
                                           n, partitions - 1, params);
                 compact_elias_fano_opt_vb::write(bv_upper_bounds, upper_bounds.begin(),
                                           universe, partitions + 1, params);
                 uint64_t endpoint_bits = ceil_log2(bv_sequences.size() + 1);
-                write_gamma(bvb, endpoint_bits);
+                pisa::write_gamma(bvb, endpoint_bits);
 
                 bvb.append(bv_sizes);
                 bvb.append(bv_upper_bounds);
@@ -155,7 +154,7 @@ namespace pvb {
         static const uint64_t type_bits = indexed_sequence_opt_vb<>::type_bits;
 
         template<typename Iterator>
-        static void write_block(succinct::bit_vector_builder& bvb,
+        static void write_block(pisa::bit_vector_builder& bvb,
                                 Iterator begin, int type,
                                 uint64_t base, uint64_t universe, uint64_t n,
                                 global_parameters_opt_vb const& params)

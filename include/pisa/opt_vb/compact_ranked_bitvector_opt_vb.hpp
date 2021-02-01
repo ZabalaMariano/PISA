@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdexcept>
-#include "succinct/bit_vector.hpp"
-#include "succinct/broadword.hpp"
+#include "../bit_vector.hpp"
+#include "../util/broadword.hpp"
 
 #include "./global_parameters_opt_vb.hpp"
 #include "./util_opt_vb.hpp"
@@ -71,12 +71,12 @@ namespace pvb {
         }
 
         template<typename Iterator>
-        static void write(succinct::bit_vector_builder& bvb,
+        static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
                           global_parameters_opt_vb const& params)
         {
-            using succinct::util::ceil_div;
+            using pisa::ceil_div;
 
             uint64_t base_offset = bvb.size();
             offsets of(base_offset, universe, n, params);
@@ -132,7 +132,7 @@ namespace pvb {
         }
 
         template<typename Iterator>
-        static void write(succinct::bit_vector_builder& bvb,
+        static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t base,
                           uint64_t universe, uint64_t n,
@@ -156,7 +156,7 @@ namespace pvb {
             enumerator()
             {}
 
-            enumerator(succinct::bit_vector const& bv, uint64_t offset,
+            enumerator(pisa::bit_vector const& bv, uint64_t offset,
                        uint64_t universe, uint64_t n,
                        global_parameters_opt_vb const& params)
                 : m_bv(&bv)
@@ -188,7 +188,7 @@ namespace pvb {
                     if (DS2I_UNLIKELY(m_position == size())) {
                         m_value = m_of.universe;
                     } else {
-                        succinct::bit_vector::unary_enumerator he = m_enumerator;
+                        pisa::bit_vector::unary_enumerator he = m_enumerator;
                         for (size_t i = 0; i < skip; ++i) {
                             he.next();
                         }
@@ -212,7 +212,7 @@ namespace pvb {
                 if (DS2I_LIKELY(lower_bound > m_value
                            && diff <= linear_scan_threshold)) {
                     // optimize small skips
-                    succinct::bit_vector::unary_enumerator he = m_enumerator;
+                    pisa::bit_vector::unary_enumerator he = m_enumerator;
                     uint64_t val;
                     do {
                         m_position += 1;
@@ -286,7 +286,7 @@ namespace pvb {
                     uint64_t ptr = position >> m_of.log_sampling1;
                     uint64_t ptr_pos = pointer1(ptr);
 
-                    m_enumerator = succinct::bit_vector::unary_enumerator
+                    m_enumerator = pisa::bit_vector::unary_enumerator
                               (*m_bv, m_of.bits_offset + ptr_pos);
                     to_skip = position - (ptr << m_of.log_sampling1);
                 }
@@ -300,14 +300,14 @@ namespace pvb {
 
             value_type DS2I_NOINLINE slow_next_geq(uint64_t lower_bound)
             {
-                using succinct::broadword::popcount;
+                using pisa::broadword::popcount;
 
                 if (DS2I_UNLIKELY(lower_bound >= m_of.universe)) {
                     return move(size());
                 }
 
                 uint64_t skip = lower_bound - m_value;
-                m_enumerator = succinct::bit_vector::unary_enumerator
+                m_enumerator = pisa::bit_vector::unary_enumerator
                     (*m_bv, m_of.bits_offset + lower_bound);
 
                 uint64_t begin;
@@ -379,11 +379,11 @@ namespace pvb {
                                m_of.rank1_sample_size);
             }
 
-            succinct::bit_vector const* m_bv;
+            pisa::bit_vector const* m_bv;
             offsets m_of;
             uint64_t m_position;
             uint64_t m_value;
-            succinct::bit_vector::unary_enumerator m_enumerator;
+            pisa::bit_vector::unary_enumerator m_enumerator;
 
             // code adapted from:
             // https://lemire.me/blog/2018/03/08/iterating-over-set-bits-quickly-simd-edition/

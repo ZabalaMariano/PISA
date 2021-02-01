@@ -12,6 +12,8 @@
 #include "query/algorithm.hpp"
 #include "test_common.hpp"
 
+#include "opt_vb/global_parameters_opt_vb.hpp"
+
 using namespace pisa;
 
 template <typename Index>
@@ -31,7 +33,7 @@ struct IndexData {
               dropped_term_ids)
 
     {
-        typename Index::builder builder(collection.num_docs(), params);
+        typename Index::builder builder(collection.num_docs(), params, params_opt_vb);
         for (auto const& plist: collection) {
             uint64_t freqs_sum = std::accumulate(plist.freqs.begin(), plist.freqs.end(), uint64_t(0));
             builder.add_posting_list(
@@ -60,6 +62,7 @@ struct IndexData {
     }
 
     global_parameters params;
+    pvb::global_parameters_opt_vb params_opt_vb;
     binary_freq_collection collection;
     binary_collection document_sizes;
     Index index;

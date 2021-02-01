@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./configuration_opt_vb.hpp"
+#include "configuration.hpp"//#include "./configuration_opt_vb.hpp"
 
 namespace pvb {
 
@@ -25,8 +25,7 @@ namespace pvb {
 
         template<typename Iterator>
         static std::vector<block<Iterator>>
-        compute_partition(Iterator begin, uint64_t n,
-                          configuration_opt_vb const& conf)
+        compute_partition(Iterator begin, uint64_t n)//configuration_opt_vb const& conf)
         {
             assert(VBBlock::type == 0 and
                    RBBlock::type == 1);
@@ -44,7 +43,7 @@ namespace pvb {
             int64_t best_bv_gain = 0;
             int64_t best_vb_gain = 0;
             int64_t curr_gain = -1;
-            int64_t F = int64_t(conf.fix_cost);
+            int64_t F = int64_t(pisa::configuration::get().fix_cost);
             int64_t T = F;
 
             posting_type curr;

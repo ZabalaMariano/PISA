@@ -1,6 +1,6 @@
 #pragma once
 
-#include "succinct/bit_vector.hpp"
+#include "bit_vector.hpp"
 
 #include "./compact_elias_fano_opt_vb.hpp"
 
@@ -20,7 +20,7 @@ namespace pvb {
                 m_endpoints.push_back(0);
             }
 
-            void append(succinct::bit_vector_builder& bvb)
+            void append(pisa::bit_vector_builder& bvb)
             {
                 m_bitvectors.append(bvb);
                 m_endpoints.push_back(m_bitvectors.size());
@@ -29,13 +29,13 @@ namespace pvb {
             void build(bitvector_collection_opt_vb& sq)
             {
                 sq.m_size = m_endpoints.size() - 1;
-                succinct::bit_vector(&m_bitvectors).swap(sq.m_bitvectors);
+                pisa::bit_vector(&m_bitvectors).swap(sq.m_bitvectors);
 
-                succinct::bit_vector_builder bvb;
+                pisa::bit_vector_builder bvb;
                 compact_elias_fano_opt_vb::write(bvb, m_endpoints.begin(),
                                           m_bitvectors.size(), sq.m_size,
                                           m_params);
-                succinct::bit_vector(&bvb).swap(sq.m_endpoints);
+                pisa::bit_vector(&bvb).swap(sq.m_endpoints);
             }
 
             size_t size() const
@@ -46,7 +46,7 @@ namespace pvb {
         private:
             global_parameters_opt_vb m_params;
             std::vector<uint64_t> m_endpoints;
-            succinct::bit_vector_builder m_bitvectors;
+            pisa::bit_vector_builder m_bitvectors;
         };
 
         size_t size() const
@@ -54,12 +54,12 @@ namespace pvb {
             return m_size;
         }
 
-        succinct::bit_vector const& bits() const
+        pisa::bit_vector const& bits() const
         {
             return m_bitvectors;
         }
 
-        succinct::bit_vector::enumerator
+        pisa::bit_vector::enumerator
         get(global_parameters_opt_vb const& params, size_t i) const
         {
             assert(i < size());
@@ -68,7 +68,7 @@ namespace pvb {
                                                      params);
 
             auto endpoint = endpoints.move(i).second;
-            return succinct::bit_vector::enumerator(m_bitvectors, endpoint);
+            return pisa::bit_vector::enumerator(m_bitvectors, endpoint);
         }
 
         void swap(bitvector_collection_opt_vb& other)
@@ -90,7 +90,7 @@ namespace pvb {
 
     private:
         size_t m_size;
-        succinct::bit_vector m_endpoints;
-        succinct::bit_vector m_bitvectors;
+        pisa::bit_vector m_endpoints;
+        pisa::bit_vector m_bitvectors;
     };
 }

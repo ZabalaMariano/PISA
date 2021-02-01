@@ -7,12 +7,12 @@
 #include "../../../external/MaskedVByte/include/varintdecode.h"
 
 #include "./global_parameters_opt_vb.hpp"
-#include "../../../external/succinct/bit_vector.hpp"
+#include "bit_vector.hpp"
 
 #include "./VarIntG8IU.h"
 #include "./varintgb.h"
 
-#include "../../../external/succinct/util.hpp"
+#include "../util/util.hpp"
 #include "./interpolative_coding_opt_vb.hpp"
 #include "./util_opt_vb.hpp"
 #include "./typedefs.hpp"
@@ -129,7 +129,8 @@ struct interpolative_block {
         bw.write_interpolative(inbuf.data(), n - 1, 0, sum_of_values);
         uint8_t const* bufptr = (uint8_t const*)outbuf.data();
         out.insert(out.end(), bufptr,
-                   bufptr + succinct::util::ceil_div(bw.size(), 8));
+                   bufptr + 
+                   pisa::ceil_div(bw.size(), 8));
     }
 
     static uint8_t const* DS2I_NOINLINE decode(uint8_t const* in, uint32_t* out,
@@ -149,7 +150,7 @@ struct interpolative_block {
             for (size_t i = n - 1; i > 0; --i) {
                 out[i] -= out[i - 1];
             }
-            read_interpolative = succinct::util::ceil_div(br.position(), 8);
+            read_interpolative = pisa::ceil_div(br.position(), 8);
         }
 
         return inbuf + read_interpolative;
@@ -219,7 +220,7 @@ struct varintg8iu_block {
     }
 
     template <typename Iterator>
-    static void write(succinct::bit_vector_builder& bvb, Iterator begin,
+    static void write(pisa::bit_vector_builder& bvb, Iterator begin,
                       uint64_t base, uint64_t universe, uint64_t n,
                       global_parameters_opt_vb const& params) {
         // TODO - Check
@@ -333,7 +334,7 @@ struct maskedvbyte_block_opt_vb {
 
         assert(x >= base);
         return 8 *
-               succinct::util::ceil_div(ceil_log2(x - base + 1),  // delta gap
+               pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
                                         7);
     }
 
@@ -354,7 +355,7 @@ struct maskedvbyte_block_opt_vb {
     }
 
     template <typename Iterator>
-    static void write(succinct::bit_vector_builder& bvb, Iterator begin,
+    static void write(pisa::bit_vector_builder& bvb, Iterator begin,
                       uint64_t base, uint64_t universe, uint64_t n,
                       global_parameters_opt_vb const& params) {
         (void)params;

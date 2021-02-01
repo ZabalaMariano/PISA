@@ -1,9 +1,9 @@
 #pragma once
 
-#include "./configuration_opt_vb.hpp"
+#include "configuration.hpp"//#include "./configuration_opt_vb.hpp"
 #include "./global_parameters_opt_vb.hpp"
 #include "./compact_elias_fano_opt_vb.hpp"
-#include "./integer_codes_opt_vb.hpp"
+#include "../codec/integer_codes.hpp"
 #include "./util_opt_vb.hpp"
 #include "./typedefs.hpp"
 
@@ -17,9 +17,9 @@ namespace pvb {
         partitioned_sequence_enumerator_opt_vb()
         {}
 
-        partitioned_sequence_enumerator_opt_vb(succinct::bit_vector const& bv, uint64_t offset,
+        partitioned_sequence_enumerator_opt_vb(pisa::bit_vector const& bv, uint64_t offset,
                                         uint64_t universe, uint64_t n,
-                                        global_parameters_opt_vb& params)
+                                        global_parameters_opt_vb const& params)
             : m_params(&params)
             , m_size(n)
             , m_universe(universe)
@@ -27,8 +27,8 @@ namespace pvb {
             , m_cur_partition(0)
             , m_bv(&bv)
         {
-            succinct::bit_vector::enumerator it(bv, offset);
-            m_partitions = read_gamma_nonzero(it);
+            pisa::bit_vector::enumerator it(bv, offset);
+            m_partitions = pisa::read_gamma_nonzero(it);
             if (m_partitions == 1) {
                 m_cur_begin = 0;
                 m_cur_end = n;
@@ -37,7 +37,7 @@ namespace pvb {
                 m_cur_base = it.take(universe_bits);
                 auto ub = 0;
                 if (n > 1) {
-                    uint64_t universe_delta = read_delta(it);
+                    uint64_t universe_delta = pisa::read_delta(it);
                     ub = universe_delta ? universe_delta : (universe - m_cur_base - 1);
                 }
 
@@ -50,7 +50,7 @@ namespace pvb {
 
             } else {
 
-                m_endpoint_bits = read_gamma(it);
+                m_endpoint_bits = pisa::read_gamma(it);
                 uint64_t cur_offset = it.position();
                 m_sizes = compact_elias_fano_opt_vb::enumerator(bv, cur_offset,
                                                          n, m_partitions - 1, *m_params);
@@ -244,7 +244,7 @@ namespace pvb {
         //     ++m_cur_partition;
         // }
 
-        global_parameters_opt_vb* m_params;
+        global_parameters_opt_vb const* m_params;
         uint64_t m_partitions;
         uint64_t m_endpoints_offset;
         uint64_t m_endpoint_bits;
@@ -259,7 +259,7 @@ namespace pvb {
         uint64_t m_cur_base;
         uint64_t m_cur_upper_bound;
 
-        succinct::bit_vector const* m_bv;
+        pisa::bit_vector const* m_bv;
         compact_elias_fano_opt_vb::enumerator m_sizes;
         compact_elias_fano_opt_vb::enumerator m_upper_bounds;
         base_sequence_enumerator m_partition_enum;

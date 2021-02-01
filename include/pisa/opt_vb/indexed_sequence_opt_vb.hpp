@@ -54,7 +54,7 @@ struct indexed_sequence_opt_vb {
     }
 
     template <typename Iterator>
-    static void write(succinct::bit_vector_builder& bvb, Iterator begin,
+    static void write(pisa::bit_vector_builder& bvb, Iterator begin,
                       uint64_t universe, uint64_t n,
                       global_parameters_opt_vb const& params) {
         uint64_t best_cost =
@@ -92,8 +92,8 @@ struct indexed_sequence_opt_vb {
 
         enumerator() {}
 
-        enumerator(succinct::bit_vector const& bv, uint64_t offset,
-                   uint64_t universe, uint64_t n, global_parameters_opt_vb& params) {
+        enumerator(pisa::bit_vector const& bv, uint64_t offset,
+                   uint64_t universe, uint64_t n, global_parameters_opt_vb const& params) {
             m_type = index_type(bv.get_word56(offset) &
                                 ((uint64_t(1) << type_bits) - 1));
 

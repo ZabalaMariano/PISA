@@ -22,7 +22,7 @@ namespace pvb {
         }
 
         template<typename Iterator>
-        static void write(succinct::bit_vector_builder&,
+        static void write(pisa::bit_vector_builder&,
                           Iterator begin,
                           uint64_t base,
                           uint64_t universe, uint64_t n,
@@ -33,7 +33,7 @@ namespace pvb {
         }
 
         template<typename Iterator>
-        static void write(succinct::bit_vector_builder&,
+        static void write(pisa::bit_vector_builder&,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
                           global_parameters_opt_vb const&)
@@ -47,7 +47,7 @@ namespace pvb {
 
             typedef std::pair<uint64_t, uint64_t> value_type; // (position, value)
 
-            enumerator(succinct::bit_vector const&, uint64_t,
+            enumerator(pisa::bit_vector const&, uint64_t,
                        uint64_t universe, uint64_t n,
                        global_parameters_opt_vb const&)
                 : m_n(n)

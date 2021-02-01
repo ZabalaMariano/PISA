@@ -1,6 +1,6 @@
 #pragma once
 
-#include "succinct/util.hpp"
+#include "../util/util.hpp"
 #include "./global_parameters_opt_vb.hpp"
 #include "./typedefs.hpp"
 #include "./block_codecs_opt_vb.hpp"
@@ -17,13 +17,13 @@ namespace pvb {
         template<typename Iterator>
         static DS2I_FLATTEN_FUNC uint64_t
         bitsize(Iterator begin, global_parameters_opt_vb const& params, uint64_t universe, uint64_t n) {
-            succinct::bit_vector_builder bvb;
+            pisa::bit_vector_builder bvb;
             write(bvb, begin, universe, n, params);
             return bvb.size();
         }
 
         template<typename Iterator>
-        static void write(succinct::bit_vector_builder& bvb,
+        static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
                           global_parameters_opt_vb const& params)
@@ -53,7 +53,7 @@ namespace pvb {
 
             typedef std::pair<uint64_t, uint64_t> value_type; // (position, value)
 
-            enumerator(succinct::bit_vector const& bv,
+            enumerator(pisa::bit_vector const& bv,
                        uint64_t offset,
                        uint64_t universe, uint64_t n,
                        global_parameters_opt_vb const& params)
@@ -62,7 +62,7 @@ namespace pvb {
                 , m_pos_in_block(0)
                 , m_value(0)
                 , m_cur_block(0)
-                , m_blocks(succinct::util::ceil_div(n, BlockCodec::block_size))
+                , m_blocks(pisa::ceil_div(n, BlockCodec::block_size))
             {
                 (void) params;
                 assert(offset % alignment == 0);

@@ -17,7 +17,7 @@ namespace pvb {
         }
 
         template <typename Iterator>
-        static void write(succinct::bit_vector_builder& bvb,
+        static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
                           global_parameters_opt_vb const& params)
@@ -43,7 +43,7 @@ namespace pvb {
             enumerator()
             {}
 
-            enumerator(succinct::bit_vector const& bv, uint64_t offset,
+            enumerator(pisa::bit_vector const& bv, uint64_t offset,
                        uint64_t universe, uint64_t n,
                        global_parameters_opt_vb const& params)
                 : m_ef_enum(bv, offset, universe - n + 1, n, params)

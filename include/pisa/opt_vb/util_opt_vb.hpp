@@ -13,8 +13,8 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-#include "succinct/broadword.hpp"
-#include "succinct/bit_vector.hpp"
+#include "../util/broadword.hpp"
+#include "bit_vector.hpp"
 
 #include "opt_vb/typedefs.hpp"
 
@@ -42,7 +42,7 @@ typedef std::chrono::high_resolution_clock clock_type;
 
 static const uint64_t alignment = 8;
 
-uint64_t push_pad(succinct::bit_vector_builder& bvb, uint64_t alignment = 8);/* {
+inline uint64_t push_pad(pisa::bit_vector_builder& bvb, uint64_t alignment = 8) {
     uint64_t mod = bvb.size() % alignment;
     if (mod) {
         uint64_t pad = alignment - mod;
@@ -52,8 +52,8 @@ uint64_t push_pad(succinct::bit_vector_builder& bvb, uint64_t alignment = 8);/* 
     }
     return 0;
 }
-*/
-uint64_t eat_pad(succinct::bit_vector::enumerator& it, uint64_t alignment = 8);/* {
+
+inline uint64_t eat_pad(pisa::bit_vector::enumerator& it, uint64_t alignment = 8) {
     uint64_t mod = it.position() % alignment;
     if (mod) {
         uint64_t pad = alignment - mod;
@@ -63,10 +63,10 @@ uint64_t eat_pad(succinct::bit_vector::enumerator& it, uint64_t alignment = 8);/
     }
     return 0;
 }
-*/
+
 inline uint64_t ceil_log2(const uint64_t x) {
     assert(x > 0);
-    return (x > 1) ? succinct::broadword::msb(x - 1) + 1 : 0;
+    return (x > 1) ? pisa::broadword::msb(x - 1) + 1 : 0;
 }
 
 inline std::ostream& logger() {

@@ -17,6 +17,8 @@
 
 #include "scorer/scorer.hpp"
 
+#include "opt_vb/global_parameters_opt_vb.hpp"
+
 using namespace pisa;
 
 TEST_CASE("wand_data_range")
@@ -67,7 +69,8 @@ TEST_CASE("wand_data_range")
     using index_type = pefopt_index;
     index_type index;
     global_parameters params;
-    index_type::builder builder(collection.num_docs(), params);
+    pvb::global_parameters_opt_vb params_opt_vb;
+    index_type::builder builder(collection.num_docs(), params, params_opt_vb);
     for (auto const& plist: collection) {
         uint64_t freqs_sum = std::accumulate(plist.freqs.begin(), plist.freqs.end(), uint64_t(0));
         builder.add_posting_list(

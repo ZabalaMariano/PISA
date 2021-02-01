@@ -2,11 +2,16 @@
 
 #include "./bitvector_collection_opt_vb.hpp"
 #include "./compact_elias_fano_opt_vb.hpp"
-#include "./integer_codes_opt_vb.hpp"
+#include "../codec/integer_codes.hpp"
 #include "./global_parameters_opt_vb.hpp"
-#include "./configuration_opt_vb.hpp"
+#include "configuration.hpp"//#include "./configuration_opt_vb.hpp"
 
-namespace pvb {
+#include "mappable/mapper.hpp"
+#include "memory_source.hpp"
+
+#include "global_parameters.hpp"
+
+namespace pisa {
 
 struct BitVectorIndexTag;
 
@@ -20,24 +25,49 @@ struct BitVectorIndexTag;
             , m_num_docs(0)
         {}
 
+        explicit freq_index_opt_vb(MemorySource source) : m_source(std::move(source))
+        {
+            mapper::map(*this, m_source.data(), mapper::map_flags::warmup);
+        }
+
         struct builder {
-            builder(uint64_t num_docs, global_parameters_opt_vb const& params)
-                : m_params(params)
+            builder(uint64_t num_docs, global_parameters const& params,
+            pvb::global_parameters_opt_vb const& params_opt_vb)
+                : m_params(params_opt_vb)
                 , m_num_docs(num_docs)
-                , m_docs_sequences(params)
-                , m_freqs_sequences(params)
+                , m_docs_sequences(params_opt_vb)
+                , m_freqs_sequences(params_opt_vb)
             {}
 
             template<typename DocsIterator, typename FreqsIterator>
             void add_posting_list(uint64_t n, DocsIterator docs_begin,
-                                  FreqsIterator freqs_begin, uint64_t occurrences,
-                                  configuration_opt_vb const& conf)
+                                  FreqsIterator freqs_begin, uint64_t occurrences)//pvb::configuration_opt_vb const& conf)
             {
                 if (!n) throw std::invalid_argument("List must be nonempty");
 
-                task_region(*conf.executor, [&](task_region_handle& trh) {
+                tbb::parallel_invoke(
+                    [&] {
+                        bit_vector_builder docs_bits;
+                        write_gamma_nonzero(docs_bits, occurrences);
+                        if (occurrences > 1) {
+                            docs_bits.append_bits(n, ceil_log2(occurrences + 1));
+                        }
+                        DocsSequence::write(docs_bits, docs_begin, m_num_docs, n, m_params);
+                        pvb::push_pad(docs_bits, pvb::alignment);
+                        assert(docs_bits.size() % pvb::alignment == 0);
+                        m_docs_sequences.append(docs_bits);
+                    },
+                    [&] {
+                        bit_vector_builder freqs_bits;
+                        FreqsSequence::write(freqs_bits, freqs_begin, occurrences + 1, n, m_params);
+                        pvb::push_pad(freqs_bits, pvb::alignment);
+                        assert(freqs_bits.size() % pvb::alignment == 0);
+                        m_freqs_sequences.append(freqs_bits);
+                    });
+
+                /*pvb::task_region(*conf.executor, [&](pvb::task_region_handle& trh) {
                     trh.run([&] {
-                        succinct::bit_vector_builder docs_bits;
+                        bit_vector_builder docs_bits;
                         write_gamma_nonzero(docs_bits, occurrences);
                         if (occurrences > 1) {
                             docs_bits.append_bits(n, ceil_log2(occurrences + 1));
@@ -45,19 +75,19 @@ struct BitVectorIndexTag;
                         DocsSequence::write(docs_bits, docs_begin,
                                             m_num_docs, n,
                                             m_params, conf);
-                        push_pad(docs_bits, alignment);
-                        assert(docs_bits.size() % alignment == 0);
+                        pvb::push_pad(docs_bits, pvb::alignment);
+                        assert(docs_bits.size() % pvb::alignment == 0);
                         m_docs_sequences.append(docs_bits);
                     });
 
-                    succinct::bit_vector_builder freqs_bits;
+                    bit_vector_builder freqs_bits;
                     FreqsSequence::write(freqs_bits, freqs_begin,
                                          occurrences + 1, n,
                                          m_params, conf);
-                    push_pad(freqs_bits, alignment);
-                    assert(freqs_bits.size() % alignment == 0);
+                    pvb::push_pad(freqs_bits, pvb::alignment);
+                    assert(freqs_bits.size() % pvb::alignment == 0);
                     m_freqs_sequences.append(freqs_bits);
-                });
+                });*/
             }
 
             void build(freq_index_opt_vb& sq)
@@ -69,10 +99,10 @@ struct BitVectorIndexTag;
             }
 
         private:
-            global_parameters_opt_vb m_params;
+            pvb::global_parameters_opt_vb m_params;
             uint64_t m_num_docs;
-            bitvector_collection_opt_vb::builder m_docs_sequences;
-            bitvector_collection_opt_vb::builder m_freqs_sequences;
+            pvb::bitvector_collection_opt_vb::builder m_docs_sequences;
+            pvb::bitvector_collection_opt_vb::builder m_freqs_sequences;
         };
 
         uint64_t size() const {
@@ -182,7 +212,7 @@ struct BitVectorIndexTag;
             // XXX implement this
         }
 
-        global_parameters_opt_vb const& params() const {
+        pvb::global_parameters_opt_vb const& params() const {
             return m_params;
         }
 
@@ -204,9 +234,10 @@ struct BitVectorIndexTag;
         }
 
     private:
-        global_parameters_opt_vb m_params;
+        pvb::global_parameters_opt_vb m_params;
         uint64_t m_num_docs;
-        bitvector_collection_opt_vb m_docs_sequences;
-        bitvector_collection_opt_vb m_freqs_sequences;
+        pvb::bitvector_collection_opt_vb m_docs_sequences;
+        pvb::bitvector_collection_opt_vb m_freqs_sequences;
+        MemorySource m_source;
     };
 }
