@@ -195,11 +195,13 @@ struct varintg8iu_block {
 
     static inline uint64_t posting_cost(posting_type x, uint64_t base) {
         if (x == 0 or x - base == 0) {
-            return 8;
+            return 9; // 8 bits value + 1 bit header
         }
-        codec_type varint_codec;
+
         assert(x >= base);
-        return (uint64_t) varint_codec.posting_cost(x, base);
+        return 9 *
+               pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
+                                        7);
     }
 
     template <typename Iterator>
@@ -207,7 +209,6 @@ struct varintg8iu_block {
                                               global_parameters_opt_vb const& params,
                                               uint64_t universe, uint64_t n,
                                               uint64_t base = 0) {
-        // TODO - Check
         (void)params;
         (void)universe;
         uint64_t cost = 0;
@@ -223,7 +224,6 @@ struct varintg8iu_block {
     static void write(pisa::bit_vector_builder& bvb, Iterator begin,
                       uint64_t base, uint64_t universe, uint64_t n,
                       global_parameters_opt_vb const& params) {
-        // TODO - Check
         (void)params;
         std::vector<uint32_t> gaps;
         gaps.reserve(n);
@@ -394,6 +394,54 @@ struct maskedvbyte_block_opt_vb {
 
 struct varintgb_block {
     static const uint64_t block_size = constants::block_size;
+    static const int type = 1;
+
+    static inline uint64_t posting_cost(posting_type x, uint64_t base) {
+        if (x == 0 or x - base == 0) {
+            return 10; // 8 bits value + 2 bit header
+        }
+
+        assert(x >= base);
+        return 10 *
+               pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
+                                        7);
+    }
+
+    template <typename Iterator>
+    static DS2I_FLATTEN_FUNC uint64_t bitsize(Iterator begin,
+                                              global_parameters_opt_vb const& params,
+                                              uint64_t universe, uint64_t n,
+                                              uint64_t base = 0) {
+        (void)params;
+        (void)universe;
+        uint64_t cost = 0;
+        auto it = begin;
+        for (uint64_t i = 0; i < n; ++i, ++it) {
+            cost += posting_cost(*it, base);
+            base = *it;
+        }
+        return cost;
+    }
+
+    template <typename Iterator>
+    static void write(pisa::bit_vector_builder& bvb, Iterator begin,
+                      uint64_t base, uint64_t universe, uint64_t n,
+                      global_parameters_opt_vb const& params) {
+        (void)params;
+        std::vector<uint32_t> gaps;
+        gaps.reserve(n);
+        uint32_t last_doc(-1);
+        for (size_t i = 0; i < n; ++i) {
+            uint32_t doc = *(begin + i) - base;
+            gaps.push_back(doc - last_doc);  // delta gap
+            last_doc = doc;
+        }
+        std::vector<uint8_t> out;
+        encode(gaps.data(), universe, n, out);
+        for (uint8_t v : out) {
+            bvb.append_bits(v, 8);
+        }
+    }
 
     static void encode(uint32_t const* in, uint32_t sum_of_values, size_t n,
                        std::vector<uint8_t>& out) {
