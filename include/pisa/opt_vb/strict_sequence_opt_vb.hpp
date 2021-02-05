@@ -42,7 +42,7 @@ namespace pvb {
                 best_cost = ef_cost;
             }
 
-            uint64_t rb_cost = compact_ranked_bitvector_opt_vb::bitsize(sparams, universe, n) + type_bits;
+            uint64_t rb_cost = varintg8iu_block::bitsize(sparams, universe, n) + type_bits;
             if (rb_cost < best_cost) {
                 best_cost = rb_cost;
             }
@@ -67,7 +67,7 @@ namespace pvb {
                     best_type = elias_fano;
                 }
 
-                uint64_t rb_cost = compact_ranked_bitvector_opt_vb::bitsize(sparams, universe, n) + type_bits;
+                uint64_t rb_cost = varintg8iu_block::bitsize(sparams, universe, n) + type_bits;
                 if (rb_cost < best_cost) {
                     best_cost = rb_cost;
                     best_type = ranked_bitvector;
@@ -83,7 +83,7 @@ namespace pvb {
                                          sparams);
                 break;
             case ranked_bitvector:
-                compact_ranked_bitvector_opt_vb::write(bvb, begin,
+                varintg8iu_block::write(bvb, begin,
                                                 universe, n,
                                                 sparams);
                 break;
@@ -125,7 +125,7 @@ namespace pvb {
                                                                     sparams);
                     break;
                 case ranked_bitvector:
-                    m_rb_enumerator = compact_ranked_bitvector_opt_vb::enumerator(bv, offset + type_bits,
+                    m_rb_enumerator = varintg8iu_block::enumerator(bv, offset + type_bits,
                                                                            universe, n,
                                                                            sparams);
                     break;
@@ -170,7 +170,7 @@ namespace pvb {
             index_type m_type;
             union {
                 strict_elias_fano_opt_vb::enumerator m_ef_enumerator;
-                compact_ranked_bitvector_opt_vb::enumerator m_rb_enumerator;
+                varintg8iu_block::enumerator m_rb_enumerator;
                 all_ones_sequence_opt_vb::enumerator m_ao_enumerator;
             };
         };

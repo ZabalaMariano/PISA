@@ -36,7 +36,7 @@ struct indexed_sequence_opt_vb {
                                               uint64_t third_cost,
                                               uint64_t universe, uint64_t n) {
         uint64_t best_cost = third_cost;
-        uint64_t rb_cost = compact_ranked_bitvector_opt_vb::bitsize(params, universe,
+        uint64_t rb_cost = varintg8iu_block::bitsize(params, universe,
                                                              n) /*+ type_bits*/;
         if (rb_cost < best_cost) {
             best_cost = rb_cost;
@@ -62,7 +62,7 @@ struct indexed_sequence_opt_vb {
         int best_type = third;
 
         uint64_t rb_cost =
-            compact_ranked_bitvector_opt_vb::bitsize(params, universe, n) + type_bits;
+            varintg8iu_block::bitsize(params, universe, n) + type_bits;
         if (rb_cost < best_cost) {
             best_cost = rb_cost;
             best_type = ranked_bitvector;
@@ -78,7 +78,7 @@ struct indexed_sequence_opt_vb {
                 Encoder::write(bvb, begin, universe, n, params);
                 break;
             case ranked_bitvector:
-                compact_ranked_bitvector_opt_vb::write(bvb, begin, universe, n,
+                varintg8iu_block::write(bvb, begin, universe, n,
                                                 params);
                 break;
             default:
@@ -118,7 +118,7 @@ struct indexed_sequence_opt_vb {
                 case ranked_bitvector:
                     // if (n > 2048)
                     //     params.dense_avg_gap += universe * 1.0 / n;
-                    m_rb_enumerator = compact_ranked_bitvector_opt_vb::enumerator(
+                    m_rb_enumerator = varintg8iu_block::enumerator(
                         bv, offset + type_bits, universe, n, params);
                     break;
                 default:
@@ -154,7 +154,7 @@ struct indexed_sequence_opt_vb {
         index_type m_type;
         union {
             typename Encoder::enumerator m_th_enumerator;
-            compact_ranked_bitvector_opt_vb::enumerator m_rb_enumerator;
+            varintg8iu_block::enumerator m_rb_enumerator;
         };
     };
 };

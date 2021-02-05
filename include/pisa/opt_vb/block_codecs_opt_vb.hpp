@@ -201,7 +201,7 @@ struct varintg8iu_block {
         assert(x >= base);
         return 9 *
                pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
-                                        7);
+                                        8);
     }
 
     template <typename Iterator>
@@ -404,7 +404,7 @@ struct varintgb_block {
         assert(x >= base);
         return 10 *
                pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
-                                        7);
+                                        8);
     }
 
     template <typename Iterator>
