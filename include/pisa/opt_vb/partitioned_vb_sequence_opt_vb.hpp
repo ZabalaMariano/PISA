@@ -152,7 +152,10 @@ namespace pvb {
 
     private:
 
-        static const uint64_t type_bits = indexed_sequence_opt_vb<>::type_bits;
+        static const uint64_t type_bits = indexed_sequence_opt_vb<
+            compact_elias_fano_opt_vb,
+            block_sequence_opt_vb<VByteBlockType2>
+        >::type_bits;
 
         template<typename Iterator>
         static void write_block(pisa::bit_vector_builder& bvb,
