@@ -195,13 +195,13 @@ struct varintg8iu_block {
 
     static inline uint64_t posting_cost(posting_type x, uint64_t base) {
         if (x == 0 or x - base == 0) {
-            return 9; // 8 bits value + 1 bit header
+            return 8; // 8 bits value + 1 bit header
         }
 
         assert(x >= base);
-        return (8 *
-               pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
-                                        8))+1;
+        auto bytes = pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
+                                        8);
+        return (8 * bytes) + bytes; // payload + header (1 bit per byte)
     }
 
     template <typename Iterator>
