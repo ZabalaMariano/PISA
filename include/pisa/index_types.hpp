@@ -51,9 +51,9 @@ using block_simdbp_index = block_freq_index<pisa::simdbp_block>;
 
 using opt_vb_index =
     freq_index_opt_vb<
-        pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>,
+        pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintg8iu_block>,
         pvb::positive_sequence_opt_vb<
-            pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>
+            pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintg8iu_block>
         >
     >;
 

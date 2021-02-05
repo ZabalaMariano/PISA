@@ -14,17 +14,18 @@
 
 namespace pvb {
 
-    template<typename VByteBlockType>
+    template<typename VByteBlockType, typename VByteBlockType2>
     struct partitioned_vb_sequence_opt_vb {
 
         typedef partitioned_sequence_enumerator_opt_vb<
                     indexed_sequence_opt_vb<
-                        block_sequence_opt_vb<VByteBlockType>
+                        block_sequence_opt_vb<VByteBlockType>,
+                        block_sequence_opt_vb<VByteBlockType2>
                     >
                 > enumerator;
 
-        typedef VByteBlockType           VBBlock;
-        typedef varintg8iu_block RBBlock;
+        typedef VByteBlockType  VBBlock;
+        typedef VByteBlockType2 RBBlock;
 
         template<typename Iterator>
         static void write(pisa::bit_vector_builder& bvb,
@@ -33,7 +34,7 @@ namespace pvb {
                           global_parameters_opt_vb const& params)//configuration_opt_vb const& conf)
         {
             assert(n > 0);
-            auto partition = optimizer_opt_vb<VByteBlockType>::compute_partition(begin, n);
+            auto partition = optimizer_opt_vb<VByteBlockType, VByteBlockType2>::compute_partition(begin, n);
             size_t partitions = partition.size();
             assert(partitions > 0);
 
@@ -168,6 +169,7 @@ namespace pvb {
                     break;
                 case RBBlock::type:
                     bvb.append_bits(type, type_bits);
+                    push_pad(bvb);
                     RBBlock::write(bvb, begin, base, universe, n, params);
                     break;
                 default:

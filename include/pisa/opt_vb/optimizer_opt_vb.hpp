@@ -4,11 +4,11 @@
 
 namespace pvb {
 
-    template<typename Encoder>
+    template<typename Encoder, typename Encoder2>
     struct optimizer_opt_vb {
 
-        typedef Encoder                  VBBlock;
-        typedef varintg8iu_block         RBBlock;
+        typedef Encoder     VBBlock;
+        typedef Encoder2    RBBlock;
 
         static const int invalid_block_type = -1;
 

@@ -21,7 +21,7 @@ struct is_byte_aligned<block_sequence_opt_vb<B>> {
     static const bool value = true;
 };
 
-template <typename Encoder = compact_elias_fano_opt_vb>
+template <typename Encoder, typename Encoder2>
 struct indexed_sequence_opt_vb {
     enum index_type {
         third = 0,
@@ -36,7 +36,7 @@ struct indexed_sequence_opt_vb {
                                               uint64_t third_cost,
                                               uint64_t universe, uint64_t n) {
         uint64_t best_cost = third_cost;
-        uint64_t rb_cost = varintg8iu_block::bitsize(params, universe,
+        uint64_t rb_cost = Encoder2::bitsize(params, universe,
                                                              n) /*+ type_bits*/;
         if (rb_cost < best_cost) {
             best_cost = rb_cost;
@@ -62,14 +62,14 @@ struct indexed_sequence_opt_vb {
         int best_type = third;
 
         uint64_t rb_cost =
-            varintg8iu_block::bitsize(params, universe, n) + type_bits;
+            Encoder2::bitsize(begin, params, universe, n) + type_bits;
         if (rb_cost < best_cost) {
             best_cost = rb_cost;
             best_type = ranked_bitvector;
         }
 
         bvb.append_bits(best_type, type_bits);
-        if (best_type == third and is_byte_aligned<Encoder>::value) {
+        if (is_byte_aligned<Encoder>::value) {
             push_pad(bvb, alignment);
         }
 
@@ -78,7 +78,7 @@ struct indexed_sequence_opt_vb {
                 Encoder::write(bvb, begin, universe, n, params);
                 break;
             case ranked_bitvector:
-                varintg8iu_block::write(bvb, begin, universe, n,
+                Encoder2::write(bvb, begin, universe, n,
                                                 params);
                 break;
             default:
@@ -98,7 +98,7 @@ struct indexed_sequence_opt_vb {
                                 ((uint64_t(1) << type_bits) - 1));
 
             uint64_t pad = 0;
-            if (m_type == third and is_byte_aligned<Encoder>::value) {
+            if (is_byte_aligned<Encoder>::value) {
                 uint64_t mod = (offset + type_bits) % alignment;
                 if (mod) {
                     pad = alignment - mod;
@@ -118,7 +118,7 @@ struct indexed_sequence_opt_vb {
                 case ranked_bitvector:
                     // if (n > 2048)
                     //     params.dense_avg_gap += universe * 1.0 / n;
-                    m_rb_enumerator = varintg8iu_block::enumerator(
+                    m_rb_enumerator = typename Encoder2::enumerator(
                         bv, offset + type_bits, universe, n, params);
                     break;
                 default:
@@ -154,7 +154,7 @@ struct indexed_sequence_opt_vb {
         index_type m_type;
         union {
             typename Encoder::enumerator m_th_enumerator;
-            varintg8iu_block::enumerator m_rb_enumerator;
+            typename Encoder2::enumerator m_rb_enumerator;
         };
     };
 };
