@@ -129,7 +129,7 @@ struct interpolative_block {
         bw.write_interpolative(inbuf.data(), n - 1, 0, sum_of_values);
         uint8_t const* bufptr = (uint8_t const*)outbuf.data();
         out.insert(out.end(), bufptr,
-                   bufptr + 
+                   bufptr +
                    pisa::ceil_div(bw.size(), 8));
     }
 
@@ -158,7 +158,7 @@ struct interpolative_block {
 };
 
 struct varintg8iu_block {
-    static const uint64_t block_size = 144;
+    static const uint64_t block_size = 128;
     static const int type = 1;
 
     struct codec_type : VarIntG8IU {
@@ -235,9 +235,6 @@ struct varintg8iu_block {
         }
         std::vector<uint8_t> out;
         encode(gaps.data(), universe, n, out);
-        for (uint8_t v : out) {
-            bvb.append_bits(v, 8);
-        }
     }
 
     static void encode(uint32_t const* in, uint32_t sum_of_values, size_t n,
@@ -436,15 +433,11 @@ struct varintgb_block {
         }
         std::vector<uint8_t> out;
         encode(gaps.data(), universe, n, out);
-        for (uint8_t v : out) {
-            bvb.append_bits(v, 8);
-        }
     }
 
     static void encode(uint32_t const* in, uint32_t sum_of_values, size_t n,
                        std::vector<uint8_t>& out) {
         VarIntGB<false> varintgb_codec;
-        assert(n <= block_size);
         if (n < block_size) {
             interpolative_block::encode(in, sum_of_values, n, out);
             return;
@@ -457,7 +450,6 @@ struct varintgb_block {
     static uint8_t const* decode(uint8_t const* in, uint32_t* out,
                                  uint32_t sum_of_values, size_t n) {
         VarIntGB<false> varintgb_codec;
-        assert(n <= block_size);
         if (DS2I_UNLIKELY(n < block_size)) {
             return interpolative_block::decode(in, out, sum_of_values, n);
         }
