@@ -32,55 +32,48 @@ struct indexed_sequence_opt_vb {
 
     static const uint64_t type_bits = 1;  // all_ones is implicit
 
-    // static DS2I_FLATTEN_FUNC uint64_t bitsize(global_parameters_opt_vb const& params,
-    //                                           uint64_t third_cost,
-    //                                           uint64_t universe, uint64_t n) {
-    //     uint64_t best_cost = third_cost;
-    //     uint64_t rb_cost = Encoder2::bitsize(params, universe,
-    //                                                          n) /*+ type_bits*/;
-    //     if (rb_cost < best_cost) {
-    //         best_cost = rb_cost;
-    //     }
-    //     return best_cost;
-    // }
+    static DS2I_FLATTEN_FUNC uint64_t bitsize(global_parameters_opt_vb const& params,
+                                              uint64_t third_cost,
+                                              uint64_t universe, uint64_t n) {
+        uint64_t best_cost = third_cost;
+        uint64_t rb_cost = Encoder2::bitsize(params, universe, n) /*+ type_bits*/;
+        if (rb_cost < best_cost) {
+            best_cost = rb_cost;
+        }
+        return best_cost;
+    }
 
-    // template <typename Iterator>
-    // static DS2I_FLATTEN_FUNC uint64_t bitsize(Iterator begin,
-    //                                           global_parameters_opt_vb const& params,
-    //                                           uint64_t universe, uint64_t n) {
-    //     uint64_t third_cost =
-    //         Encoder::bitsize(begin, params, universe, n) /*+ type_bits*/;
-    //     return bitsize(params, third_cost, universe, n);
-    // }
+    template <typename Iterator>
+    static DS2I_FLATTEN_FUNC uint64_t bitsize(Iterator begin,
+                                              global_parameters_opt_vb const& params,
+                                              uint64_t universe, uint64_t n) {
+        uint64_t third_cost = Encoder::bitsize(begin, params, universe, n) /*+ type_bits*/;
+        return bitsize(params, third_cost, universe, n);
+    }
 
     template <typename Iterator>
     static void write(pisa::bit_vector_builder& bvb, Iterator begin,
                       uint64_t universe, uint64_t n,
                       global_parameters_opt_vb const& params) {
-        uint64_t best_cost =
-            Encoder::bitsize(begin, params, universe, n) + type_bits;
+        uint64_t best_cost = Encoder::bitsize(begin, params, universe, n) + type_bits;
         int best_type = third;
 
-        uint64_t rb_cost =
-            Encoder2::bitsize(begin, params, universe, n) + type_bits;
+        uint64_t rb_cost = Encoder2::bitsize(begin, params, universe, n) + type_bits;
         if (rb_cost < best_cost) {
             best_cost = rb_cost;
             best_type = ranked_bitvector;
         }
 
         bvb.append_bits(best_type, type_bits);
+        if (is_byte_aligned<Encoder>::value) {
+            push_pad(bvb, alignment);
+        }
 
         switch (best_type) {
             case third:
-                if (is_byte_aligned<Encoder>::value) {
-                    push_pad(bvb, alignment);
-                }
                 Encoder::write(bvb, begin, universe, n, params);
                 break;
             case ranked_bitvector:
-                if (is_byte_aligned<Encoder2>::value) {
-                    push_pad(bvb, alignment);
-                }
                 Encoder2::write(bvb, begin, universe, n, params);
                 break;
             default:

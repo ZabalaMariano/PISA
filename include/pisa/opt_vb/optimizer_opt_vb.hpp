@@ -1,6 +1,6 @@
 #pragma once
 
-#include "configuration.hpp"//#include "./configuration_opt_vb.hpp"
+#include "configuration.hpp"
 
 namespace pvb {
 
