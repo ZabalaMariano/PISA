@@ -129,7 +129,7 @@ struct interpolative_block {
         bw.write_interpolative(inbuf.data(), n - 1, 0, sum_of_values);
         uint8_t const* bufptr = (uint8_t const*)outbuf.data();
         out.insert(out.end(), bufptr,
-                   bufptr +
+                   bufptr + 
                    pisa::ceil_div(bw.size(), 8));
     }
 
@@ -195,7 +195,7 @@ struct varintg8iu_block {
 
     static inline uint64_t posting_cost(posting_type x, uint64_t base) {
         if (x == 0 or x - base == 0) {
-            return 9; // 8 bits value + 1 bit header
+            return 8; // 8 bits value + 1 bit header
         }
 
         assert(x >= base);
@@ -399,13 +399,13 @@ struct varintgb_block {
 
     static inline uint64_t posting_cost(posting_type x, uint64_t base) {
         if (x == 0 or x - base == 0) {
-            return 10; // 8 bits value + 2 bit header
+            return 8;//10; // 8 bits value + 2 bit header
         }
 
         assert(x >= base);
         return (8 *
                pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
-                                        8)) + 2;
+                                        8));// + 2;
     }
 
     template <typename Iterator>
