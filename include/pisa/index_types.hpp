@@ -49,11 +49,19 @@ using block_simple8b_index = block_freq_index<pisa::simple8b_block>;
 using block_simple16_index = block_freq_index<pisa::simple16_block>;
 using block_simdbp_index = block_freq_index<pisa::simdbp_block>;
 
-using opt_vb_index =
+using maskedvbyte_varintg8iu_index =
     freq_index_opt_vb<
         pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintg8iu_block>,
         pvb::positive_sequence_opt_vb<
             pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintg8iu_block>
+        >
+    >;
+
+using maskedvbyte_varintgb_index =
+    freq_index_opt_vb<
+        pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintgb_block>,
+        pvb::positive_sequence_opt_vb<
+            pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintgb_block>
         >
     >;
 
@@ -62,7 +70,7 @@ using opt_vb_index =
 #define PISA_INDEX_TYPES                                                                    \
     (ef)(single)(pefuniform)(pefopt)(block_optpfor)(block_varintg8iu)(block_streamvbyte)(   \
         block_maskedvbyte)(block_interpolative)(block_qmx)(block_varintgb)(block_simple8b)( \
-        block_simple16)(block_simdbp)(opt_vb)
+        block_simple16)(block_simdbp)(maskedvbyte_varintg8iu)(maskedvbyte_varintgb)
 #define PISA_BLOCK_INDEX_TYPES                                                                    \
     (block_optpfor)(block_varintg8iu)(block_streamvbyte)(block_maskedvbyte)(block_interpolative)( \
         block_qmx)(block_varintgb)(block_simple8b)(block_simple16)(block_simdbp)

@@ -36,8 +36,7 @@ struct indexed_sequence_opt_vb {
                                               uint64_t third_cost,
                                               uint64_t universe, uint64_t n) {
         uint64_t best_cost = third_cost;
-        uint64_t rb_cost = Encoder2::bitsize(params, universe,
-                                                             n) /*+ type_bits*/;
+        uint64_t rb_cost = Encoder2::bitsize(params, universe, n) /*+ type_bits*/;
         if (rb_cost < best_cost) {
             best_cost = rb_cost;
         }
@@ -48,8 +47,7 @@ struct indexed_sequence_opt_vb {
     static DS2I_FLATTEN_FUNC uint64_t bitsize(Iterator begin,
                                               global_parameters_opt_vb const& params,
                                               uint64_t universe, uint64_t n) {
-        uint64_t third_cost =
-            Encoder::bitsize(begin, params, universe, n) /*+ type_bits*/;
+        uint64_t third_cost = Encoder::bitsize(begin, params, universe, n) /*+ type_bits*/;
         return bitsize(params, third_cost, universe, n);
     }
 
@@ -57,12 +55,10 @@ struct indexed_sequence_opt_vb {
     static void write(pisa::bit_vector_builder& bvb, Iterator begin,
                       uint64_t universe, uint64_t n,
                       global_parameters_opt_vb const& params) {
-        uint64_t best_cost =
-            Encoder::bitsize(begin, params, universe, n) + type_bits;
+        uint64_t best_cost = Encoder::bitsize(begin, params, universe, n) + type_bits;
         int best_type = third;
 
-        uint64_t rb_cost =
-            Encoder2::bitsize(begin, params, universe, n) + type_bits;
+        uint64_t rb_cost = Encoder2::bitsize(begin, params, universe, n) + type_bits;
         if (rb_cost < best_cost) {
             best_cost = rb_cost;
             best_type = ranked_bitvector;
@@ -78,8 +74,7 @@ struct indexed_sequence_opt_vb {
                 Encoder::write(bvb, begin, universe, n, params);
                 break;
             case ranked_bitvector:
-                Encoder2::write(bvb, begin, universe, n,
-                                                params);
+                Encoder2::write(bvb, begin, universe, n, params);
                 break;
             default:
                 assert(false);
@@ -119,7 +114,7 @@ struct indexed_sequence_opt_vb {
                     // if (n > 2048)
                     //     params.dense_avg_gap += universe * 1.0 / n;
                     m_rb_enumerator = typename Encoder2::enumerator(
-                        bv, offset + type_bits, universe, n, params);
+                        bv, offset + type_bits + pad, universe, n, params);
                     break;
                 default:
                     throw std::invalid_argument("Unsupported type");

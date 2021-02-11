@@ -243,13 +243,14 @@ struct varintg8iu_block {
     static void encode(uint32_t const* in, uint32_t sum_of_values, size_t n,
                        std::vector<uint8_t>& out) {
         codec_type varint_codec;
-        std::vector<uint8_t> buf(2 * 4 * block_size);
-        assert(n <= block_size);
+        std::vector<uint8_t> buf(2 * 4 * n);
+        //std::vector<uint8_t> buf(2 * 4 * block_size);
+        //assert(n <= block_size);
 
-        if (n < 8) {
+        /*if (n < 8) {
             interpolative_block::encode(in, sum_of_values, n, out);
             return;
-        }
+        }*/
 
         size_t out_len = buf.size();
 
@@ -270,7 +271,7 @@ struct varintg8iu_block {
     static uint8_t const* decode(uint8_t const* in, uint32_t* out,
                                  uint32_t sum_of_values, size_t n) {
         static codec_type varint_codec;  // decodeBlock is thread-safe
-        assert(n <= block_size);
+        //assert(n <= block_size);
 
         if (DS2I_UNLIKELY(n < 8)) {
             return interpolative_block::decode(in, out, sum_of_values, n);
@@ -445,12 +446,13 @@ struct varintgb_block {
 
     static void encode(uint32_t const* in, uint32_t sum_of_values, size_t n,
                        std::vector<uint8_t>& out) {
+        (void)sum_of_values;
         VarIntGB<false> varintgb_codec;
-        assert(n <= block_size);
-        if (n < block_size) {
+        //assert(n <= block_size);
+        /*if (n < block_size) {
             interpolative_block::encode(in, sum_of_values, n, out);
             return;
-        }
+        }*/
         std::vector<uint8_t> buf(2 * n * sizeof(uint32_t));
         size_t out_len = varintgb_codec.encodeArray(in, n, buf.data());
         out.insert(out.end(), buf.data(), buf.data() + out_len);
@@ -458,11 +460,12 @@ struct varintgb_block {
 
     static uint8_t const* decode(uint8_t const* in, uint32_t* out,
                                  uint32_t sum_of_values, size_t n) {
+        (void)sum_of_values;
         VarIntGB<false> varintgb_codec;
-        assert(n <= block_size);
-        if (DS2I_UNLIKELY(n < block_size)) {
+        //assert(n <= block_size);
+        /*if (DS2I_UNLIKELY(n < block_size)) {
             return interpolative_block::decode(in, out, sum_of_values, n);
-        }
+        }*/
         auto read = varintgb_codec.decodeArray(in, n, out);
         return read + in;
     }

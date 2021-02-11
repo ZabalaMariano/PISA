@@ -4,7 +4,7 @@
 #include "./compact_elias_fano_opt_vb.hpp"
 #include "../codec/integer_codes.hpp"
 #include "./global_parameters_opt_vb.hpp"
-#include "configuration.hpp"//#include "./configuration_opt_vb.hpp"
+#include "configuration.hpp"
 
 #include "mappable/mapper.hpp"
 #include "memory_source.hpp"
