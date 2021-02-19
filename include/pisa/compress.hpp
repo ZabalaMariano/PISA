@@ -166,9 +166,7 @@ void compress_index(
     spdlog::info("Processing {} documents", input.num_docs());
     double tick = get_time_usecs();
 
-    //uint64_t F = 64;
-    //pvb::configuration_opt_vb const& conf_opt_vb(F);
-    params_opt_vb.log_partition_size = configuration::get().log_partition_size;//params_opt_vb.log_partition_size = conf_opt_vb.log_partition_size;
+    params_opt_vb.log_partition_size = configuration::get().log_partition_size;
     typename CollectionType::builder builder(input.num_docs(),params,params_opt_vb);
     
     size_t postings = 0;
