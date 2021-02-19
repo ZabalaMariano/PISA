@@ -195,13 +195,13 @@ struct varintg8iu_block {
 
     static inline uint64_t posting_cost(posting_type x, uint64_t base) {
         if (x == 0 or x - base == 0) {
-            return 9; // 8 bits value + 1 bit header
+            return 16; // 8 bits value + 1 bit header
         }
 
         assert(x >= base);
         auto bytes = pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
                                         8);
-        return (8 * bytes) + bytes; // payload + header (1 bit per byte)
+        return (8 * bytes) + 8; // payload + header (1 bit per byte)
     }
 
     template <typename Iterator>
@@ -217,6 +217,8 @@ struct varintg8iu_block {
             cost += posting_cost(*it, base);
             base = *it;
         }
+        //if (cost % 8 != 0)
+        //  cost += 8 - (cost % 8);
         return cost;
     }
 
@@ -247,10 +249,10 @@ struct varintg8iu_block {
         //std::vector<uint8_t> buf(2 * 4 * block_size);
         //assert(n <= block_size);
 
-        /*if (n < 8) {
+        if (n < 8) {
             interpolative_block::encode(in, sum_of_values, n, out);
             return;
-        }*/
+        }
 
         size_t out_len = buf.size();
 
@@ -301,24 +303,65 @@ struct varintg8iu_block {
 
 struct streamvbyte_block {
     static const uint64_t block_size = constants::block_size;
+    static const int type = 1;
+
+    static inline uint64_t posting_cost(posting_type x, uint64_t base) {
+        if (x == 0 or x - base == 0) {
+            return 10; // 8 bits value + 2 bit header
+        }
+
+        assert(x >= base);
+        return (8 *
+               pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
+                                        8)) + 2;
+    }
+
+    template <typename Iterator>
+    static DS2I_FLATTEN_FUNC uint64_t bitsize(Iterator begin,
+                                              global_parameters_opt_vb const& params,
+                                              uint64_t universe, uint64_t n,
+                                              uint64_t base = 0) {
+        (void)params;
+        (void)universe;
+        uint64_t cost = 0;
+        auto it = begin;
+        for (uint64_t i = 0; i < n; ++i, ++it) {
+            cost += posting_cost(*it, base);
+            base = *it;
+        }
+        return cost;
+    }
+
+    template <typename Iterator>
+    static void write(pisa::bit_vector_builder& bvb, Iterator begin,
+                      uint64_t base, uint64_t universe, uint64_t n,
+                      global_parameters_opt_vb const& params) {
+        (void)params;
+        std::vector<uint32_t> gaps;
+        gaps.reserve(n);
+        uint32_t last_doc(-1);
+        for (size_t i = 0; i < n; ++i) {
+            uint32_t doc = *(begin + i) - base;
+            gaps.push_back(doc - last_doc);  // delta gap
+            last_doc = doc;
+        }
+        std::vector<uint8_t> out;
+        encode(gaps.data(), universe, n, out);
+        for (uint8_t v : out) {
+            bvb.append_bits(v, 8);
+        }
+    }
+
     static void encode(uint32_t const* in, uint32_t sum_of_values, size_t n,
                        std::vector<uint8_t>& out) {
-        assert(n <= block_size);
-        if (n < block_size) {
-            interpolative_block::encode(in, sum_of_values, n, out);
-            return;
-        }
         uint32_t* src = const_cast<uint32_t*>(in);
-        std::vector<uint8_t> buf(streamvbyte_max_compressedbytes(block_size));
+        std::vector<uint8_t> buf(2 * n * sizeof(uint32_t));
         size_t out_len = streamvbyte_encode(src, n, buf.data());
         out.insert(out.end(), buf.data(), buf.data() + out_len);
     }
+
     static uint8_t const* decode(uint8_t const* in, uint32_t* out,
                                  uint32_t sum_of_values, size_t n) {
-        assert(n <= block_size);
-        if (DS2I_UNLIKELY(n < block_size)) {
-            return interpolative_block::decode(in, out, sum_of_values, n);
-        }
         auto read = streamvbyte_decode(in, out, n);
         return in + read;
     }
