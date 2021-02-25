@@ -158,7 +158,7 @@ struct interpolative_block {
 };
 
 struct varintg8iu_block {
-    static const uint64_t block_size = constants::block_size;
+    static const uint64_t block_size = 1024;
     static const int type = 1;
 
     struct codec_type : VarIntG8IU {
@@ -195,13 +195,13 @@ struct varintg8iu_block {
 
     static inline uint64_t posting_cost(posting_type x, uint64_t base) {
         if (x == 0 or x - base == 0) {
-            return 16; // 8 bits value + 1 bit header
+            return 9; // 8 bits value + 1 bit header
         }
 
         assert(x >= base);
         auto bytes = pisa::ceil_div(ceil_log2(x - base + 1),  // delta gap
                                         8);
-        return (8 * bytes) + 8; // payload + header (1 bit per byte)
+        return (8 * bytes) + bytes; // payload + header (1 bit per byte)
     }
 
     template <typename Iterator>
@@ -230,9 +230,11 @@ struct varintg8iu_block {
         std::vector<uint32_t> gaps;
         gaps.reserve(n);
         uint32_t last_doc(-1);
+        universe = 0;
         for (size_t i = 0; i < n; ++i) {
             uint32_t doc = *(begin + i) - base;
             gaps.push_back(doc - last_doc);  // delta gap
+            universe += (doc - last_doc);
             last_doc = doc;
         }
         std::vector<uint8_t> out;
@@ -302,7 +304,7 @@ struct varintg8iu_block {
 };
 
 struct streamvbyte_block {
-    static const uint64_t block_size = constants::block_size;
+    static const uint64_t block_size = 256;
     static const int type = 1;
 
     static inline uint64_t posting_cost(posting_type x, uint64_t base) {
@@ -354,14 +356,21 @@ struct streamvbyte_block {
 
     static void encode(uint32_t const* in, uint32_t sum_of_values, size_t n,
                        std::vector<uint8_t>& out) {
+        /*if (n < block_size) {
+            interpolative_block::encode(in, sum_of_values, n, out);
+            return;
+        }*/
         uint32_t* src = const_cast<uint32_t*>(in);
-        std::vector<uint8_t> buf(2 * n * sizeof(uint32_t));
+        std::vector<uint8_t> buf(streamvbyte_max_compressedbytes(n));
         size_t out_len = streamvbyte_encode(src, n, buf.data());
         out.insert(out.end(), buf.data(), buf.data() + out_len);
     }
 
     static uint8_t const* decode(uint8_t const* in, uint32_t* out,
                                  uint32_t sum_of_values, size_t n) {
+        /*if (DS2I_UNLIKELY(n < block_size)){
+            return interpolative_block::decode(in, out, sum_of_values, n);
+        }*/
         auto read = streamvbyte_decode(in, out, n);
         return in + read;
     }
