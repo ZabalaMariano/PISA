@@ -58,14 +58,18 @@ struct indexed_sequence_opt_vb {
         uint64_t best_cost = Encoder::bitsize(begin, params, universe, n) + type_bits;
         int best_type = third;
 
-        uint64_t rb_cost = Encoder2::bitsize(begin, params, universe, n) + type_bits;
+        uint64_t rb_cost = 
+            is_byte_aligned<Encoder2>::value ?
+            Encoder2::bitsize(begin, params, universe, n) + type_bits :
+            Encoder2::bitsize(params, universe, n) + type_bits;
         if (rb_cost < best_cost) {
             best_cost = rb_cost;
             best_type = ranked_bitvector;
         }
 
         bvb.append_bits(best_type, type_bits);
-        if (is_byte_aligned<Encoder>::value) {
+        if ((m_type == third and is_byte_aligned<Encoder>::value) or 
+            (m_type == ranked_bitvector and is_byte_aligned<Encoder2>::value)) {
             push_pad(bvb, alignment);
         }
 
@@ -93,7 +97,8 @@ struct indexed_sequence_opt_vb {
                                 ((uint64_t(1) << type_bits) - 1));
 
             uint64_t pad = 0;
-            if (is_byte_aligned<Encoder>::value) {
+            if ((m_type == third and is_byte_aligned<Encoder>::value) or 
+                (m_type == ranked_bitvector and is_byte_aligned<Encoder2>::value)) {
                 uint64_t mod = (offset + type_bits) % alignment;
                 if (mod) {
                     pad = alignment - mod;
