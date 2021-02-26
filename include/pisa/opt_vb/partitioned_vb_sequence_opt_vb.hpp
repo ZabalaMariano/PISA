@@ -6,7 +6,7 @@
 #include "../codec/integer_codes.hpp"
 #include "./util_opt_vb.hpp"
 #include "./indexed_sequence_opt_vb.hpp"
-
+#include "./compact_ranked_bitvector_opt_vb.hpp"
 #include "./optimizer_opt_vb.hpp"
 
 #include <limits>
@@ -168,7 +168,7 @@ namespace pvb {
                     break;
                 case RBBlock::type:
                     bvb.append_bits(type, type_bits);
-                    if (!std::is_same<RBBlock, compact_ranked_bitvector>::value)
+                    if (!std::is_same<RBBlock, pvb::compact_ranked_bitvector_opt_vb>::value)
                         push_pad(bvb);
                     RBBlock::write(bvb, begin, base, universe, n, params);
                     break;

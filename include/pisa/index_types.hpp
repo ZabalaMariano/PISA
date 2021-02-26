@@ -28,7 +28,7 @@
 #include "opt_vb/positive_sequence_opt_vb.hpp"
 #include "opt_vb/partitioned_sequence_enumerator_opt_vb.hpp"
 #include "opt_vb/indexed_sequence_opt_vb.hpp"
-#include "opt_vb/compact_ranked_bitvector.hpp"
+#include "opt_vb/compact_ranked_bitvector_opt_vb.hpp"
 
 namespace pisa {
 using ef_index = freq_index<compact_elias_fano, positive_sequence<strict_elias_fano>>;
@@ -52,26 +52,26 @@ using block_simple8b_index = block_freq_index<pisa::simple8b_block>;
 using block_simple16_index = block_freq_index<pisa::simple16_block>;
 using block_simdbp_index = block_freq_index<pisa::simdbp_block>;
 
-using masked_bitvector =
+using masked_bitvector_index =
     freq_index_opt_vb<
         pvb::partitioned_vb_sequence_opt_vb<
             pvb::maskedvbyte_block_opt_vb, // Encoder1
-            pvb::compact_ranked_bitvector, // Encoder2
+            pvb::compact_ranked_bitvector_opt_vb, // Encoder2
             pvb::partitioned_sequence_enumerator_opt_vb<
                 pvb::indexed_sequence_opt_vb<
                     pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
-                    compact_ranked_bitvector // Encoder2 Enumerator
+                    pvb::compact_ranked_bitvector_opt_vb // Encoder2 Enumerator
                 >
             >
         >,
         pvb::positive_sequence_opt_vb<
             pvb::partitioned_vb_sequence_opt_vb<
                 pvb::maskedvbyte_block_opt_vb, // Encoder1
-                pvb::compact_ranked_bitvector, // Encoder2
+                pvb::compact_ranked_bitvector_opt_vb, // Encoder2
                 pvb::partitioned_sequence_enumerator_opt_vb<
                     pvb::indexed_sequence_opt_vb<
                         pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
-                        compact_ranked_bitvector // Encoder2 Enumerator
+                        pvb::compact_ranked_bitvector_opt_vb // Encoder2 Enumerator
                     >
                 >
             >
