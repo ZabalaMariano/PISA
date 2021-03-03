@@ -23,6 +23,9 @@
 #include "wand_data.hpp"
 #include "wand_data_raw.hpp"
 
+#include <type_traits>
+#include "opt_vb/freq_index_opt_vb.hpp"
+
 namespace pisa {
 
 template <typename Collection>
@@ -216,7 +219,10 @@ void compress_index(
         }
     }
 
-    CollectionType coll(false);
+    if (std::is_same<CollectionType, freq_index_opt_vb>::value)
+        CollectionType coll(false);
+    else 
+        CollectionType coll;
     builder.build(coll);
     double elapsed_secs = (get_time_usecs() - tick) / 1000000;
     spdlog::info("{} collection built in {} seconds", seq_type, elapsed_secs);
