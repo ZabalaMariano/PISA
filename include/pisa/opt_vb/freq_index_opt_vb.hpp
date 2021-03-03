@@ -197,13 +197,13 @@ struct BitVectorIndexTag;
                                                         docs_it.position(),
                                                         num_docs(), n,
                                                         m_params);
-
+            
             auto freqs_it = m_freqs_sequences.get(m_params, i);
             typename FreqsSequence::enumerator freqs_enum(m_freqs_sequences.bits(),
                                                           freqs_it.position(),
                                                           occurrences + 1, n,
                                                           m_params);
-
+            
             return document_enumerator(docs_enum, freqs_enum);
         }
 

@@ -49,7 +49,6 @@ namespace pvb {
                 m_cur_upper_bound = m_cur_base + ub;
 
             } else {
-
                 m_endpoint_bits = pisa::read_gamma(it);
                 uint64_t cur_offset = it.position();
                 m_sizes = compact_elias_fano_opt_vb::enumerator(bv, cur_offset,
@@ -138,7 +137,6 @@ namespace pvb {
                 (void) val;
                 return pv_type(m_position, m_universe);
             }
-
             switch_partition(m_cur_partition + 1);
             uint64_t doc = m_partition_enum.move(0).second;
             uint64_t val = m_cur_base + doc;
@@ -187,7 +185,6 @@ namespace pvb {
             if (ub_it.first == m_upper_bounds.size()) {
                 return move(size());
             }
-
             switch_partition(ub_it.first - 1);
             return next_geq(lower_bound);
         }

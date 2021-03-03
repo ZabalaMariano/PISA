@@ -27,7 +27,7 @@ void verify_collection(InputCollection const& input, const char* filename)
         for (size_t i = 0; i < e.size(); ++i, e.next()) {
             uint64_t docid = *(seq.docs.begin() + i);
             uint64_t freq = *(seq.freqs.begin() + i);
-
+            
             if (docid != e.docid()) {
                 spdlog::error("docid in sequence {} differs at position {}!", s, i);
                 spdlog::error("{} != {}", e.docid(), docid);

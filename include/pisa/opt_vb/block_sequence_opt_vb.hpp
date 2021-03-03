@@ -63,11 +63,12 @@ namespace pvb {
                 , m_value(0)
                 , m_cur_block(0)
                 , m_blocks(pisa::ceil_div(n, BlockCodec::block_size))
+                , m_x(0)
+                , m_n_aux(n)
             {
                 (void) params;
                 assert(offset % alignment == 0);
                 m_ptr = reinterpret_cast<uint8_t const*>(bv.data().data()) + offset / 8;
-
                 // XXX: uncomment this for query processing!
                 decode_next_block();
                 m_value = m_buffer[0];
@@ -84,7 +85,10 @@ namespace pvb {
                 uint64_t block_size = m_cur_block < m_blocks
                                     ? BlockCodec::block_size
                                     : m_n - (m_blocks - 1) * BlockCodec::block_size;
-                m_ptr = BlockCodec::decode(m_ptr, m_buffer, m_universe, block_size);
+                m_x = 0;
+                m_ptr = BlockCodec::decode(m_ptr, m_buffer, m_universe, block_size, m_x, m_n_aux, m_cur_block == m_blocks);
+                m_n += m_x;  
+                m_blocks = pisa::ceil_div(m_n, BlockCodec::block_size);
                 uint32_t last = m_cur_block > 1 ? m_value : uint32_t(-1);
                 m_buffer[0] += last;
                 m_pos_in_block = 0;
@@ -133,7 +137,7 @@ namespace pvb {
             {
                 ++m_pos_in_block;
                 if (DS2I_LIKELY(position() < size())) {
-                    if (m_pos_in_block == BlockCodec::block_size) {
+                    if (m_pos_in_block == BlockCodec::block_size-m_x) {
                         decode_next_block();
                     }
                     m_value += m_buffer[m_pos_in_block];
@@ -152,7 +156,9 @@ namespace pvb {
             }
 
         private:
+            uint64_t m_x;
             uint64_t m_n;
+            uint64_t m_n_aux;
             uint64_t m_universe;
             uint32_t m_pos_in_block;
             uint32_t m_value;
