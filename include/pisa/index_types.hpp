@@ -31,15 +31,15 @@
 #include "opt_vb/compact_ranked_bitvector_opt_vb.hpp"
 
 namespace pisa {
-// using ef_index = freq_index<compact_elias_fano, positive_sequence<strict_elias_fano>>;
+using ef_index = freq_index<compact_elias_fano, positive_sequence<strict_elias_fano>>;
 
-// using single_index = freq_index<indexed_sequence, positive_sequence<>>;
+using single_index = freq_index<indexed_sequence, positive_sequence<>>;
 
-// using pefuniform_index =
-//     freq_index<uniform_partitioned_sequence<>, positive_sequence<uniform_partitioned_sequence<strict_sequence>>>;
+using pefuniform_index =
+    freq_index<uniform_partitioned_sequence<>, positive_sequence<uniform_partitioned_sequence<strict_sequence>>>;
 
-// using pefopt_index =
-//     freq_index<partitioned_sequence<>, positive_sequence<partitioned_sequence<strict_sequence>>>;
+using pefopt_index =
+    freq_index<partitioned_sequence<>, positive_sequence<partitioned_sequence<strict_sequence>>>;
 
 // using block_optpfor_index = block_freq_index<pisa::optpfor_block>;
 // using block_varintg8iu_index = block_freq_index<pisa::varint_G8IU_block>;
