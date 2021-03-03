@@ -319,7 +319,7 @@ namespace pvb
 
         // we only allow varint to be inlined (others have DS2I_NOILINE)
         static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint64_t& m_x, uint64_t m_n, bool ultimo_bloque)
+                                    uint64_t& m_x, uint64_t m_n, bool ultimo_bloque, bool queries)
         {           
             static codec_type varint_codec; // decodeBlock is thread-safe
 
@@ -340,7 +340,7 @@ namespace pvb
             
             // decodeBlock can overshoot, so we decode the last blocks in a
             // local buffer
-            if (ultimo_bloque or false) {
+            if (ultimo_bloque or queries) {
                 while (out_len < n)
                 {
                     uint32_t buf[8];
@@ -428,7 +428,7 @@ namespace pvb
         }
 
         static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint64_t&, uint64_t, bool)
+                                    uint64_t&, uint64_t, bool, bool)
         {
             auto read = streamvbyte_decode(in, out, n);
             return in + read;
@@ -507,7 +507,7 @@ namespace pvb
         }
 
         static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint64_t&, uint64_t, bool)
+                                    uint64_t&, uint64_t, bool, bool)
         {
             (void)sum_of_values;
             auto read = masked_vbyte_decode(in, out, n);
@@ -592,7 +592,7 @@ namespace pvb
         }
 
         static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint64_t&, uint64_t, bool)
+                                    uint64_t&, uint64_t, bool, bool)
         {
             (void)sum_of_values;
             VarIntGB<false> varintgb_codec;

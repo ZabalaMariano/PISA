@@ -216,7 +216,7 @@ void compress_index(
         }
     }
 
-    CollectionType coll;
+    CollectionType coll(false);
     builder.build(coll);
     double elapsed_secs = (get_time_usecs() - tick) / 1000000;
     spdlog::info("{} collection built in {} seconds", seq_type, elapsed_secs);
