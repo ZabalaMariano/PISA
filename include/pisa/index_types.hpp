@@ -26,6 +26,9 @@
 #include "opt_vb/freq_index_opt_vb.hpp"
 #include "opt_vb/partitioned_vb_sequence_opt_vb.hpp"
 #include "opt_vb/positive_sequence_opt_vb.hpp"
+#include "opt_vb/partitioned_sequence_enumerator_opt_vb.hpp"
+#include "opt_vb/indexed_sequence_opt_vb.hpp"
+#include "opt_vb/compact_ranked_bitvector_opt_vb.hpp"
 
 namespace pisa {
 using ef_index = freq_index<compact_elias_fano, positive_sequence<strict_elias_fano>>;
@@ -49,37 +52,116 @@ using block_simple8b_index = block_freq_index<pisa::simple8b_block>;
 using block_simple16_index = block_freq_index<pisa::simple16_block>;
 using block_simdbp_index = block_freq_index<pisa::simdbp_block>;
 
+using masked_bitvector_index =
+    freq_index_opt_vb<
+        pvb::partitioned_vb_sequence_opt_vb<
+            pvb::maskedvbyte_block_opt_vb, // Encoder1
+            pvb::compact_ranked_bitvector_opt_vb, // Encoder2
+            pvb::partitioned_sequence_enumerator_opt_vb<
+                pvb::indexed_sequence_opt_vb<
+                    pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
+                    pvb::compact_ranked_bitvector_opt_vb // Encoder2 Enumerator
+                >
+            >
+        >,
+        pvb::positive_sequence_opt_vb<
+            pvb::partitioned_vb_sequence_opt_vb<
+                pvb::maskedvbyte_block_opt_vb, // Encoder1
+                pvb::compact_ranked_bitvector_opt_vb, // Encoder2
+                pvb::partitioned_sequence_enumerator_opt_vb<
+                    pvb::indexed_sequence_opt_vb<
+                        pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
+                        pvb::compact_ranked_bitvector_opt_vb // Encoder2 Enumerator
+                    >
+                >
+            >
+        >
+    >;
+
 using masked_vgb_index =
     freq_index_opt_vb<
-        pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintgb_block>,
+        pvb::partitioned_vb_sequence_opt_vb<
+            pvb::maskedvbyte_block_opt_vb, // Encoder1
+            pvb::varintgb_block, // Encoder2
+            pvb::partitioned_sequence_enumerator_opt_vb<
+                pvb::indexed_sequence_opt_vb<
+                    pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
+                    pvb::block_sequence_opt_vb<pvb::varintgb_block> // Encoder2 Enumerator
+                >
+            >
+        >,
         pvb::positive_sequence_opt_vb<
-            pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintgb_block>
+            pvb::partitioned_vb_sequence_opt_vb<
+                pvb::maskedvbyte_block_opt_vb, // Encoder1
+                pvb::varintgb_block, // Encoder2
+                pvb::partitioned_sequence_enumerator_opt_vb<
+                    pvb::indexed_sequence_opt_vb<
+                        pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
+                        pvb::block_sequence_opt_vb<pvb::varintgb_block> // Encoder2 Enumerator
+                    >
+                >
+            >
         >
     >;
 
 using masked_vg8iu_index =
     freq_index_opt_vb<
-        pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintg8iu_block>,
+        pvb::partitioned_vb_sequence_opt_vb<
+            pvb::maskedvbyte_block_opt_vb, // Encoder1
+            pvb::varintg8iu_block, // Encoder2
+            pvb::partitioned_sequence_enumerator_opt_vb<
+                pvb::indexed_sequence_opt_vb<
+                    pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
+                    pvb::block_sequence_opt_vb<pvb::varintg8iu_block> // Encoder2 Enumerator
+                >
+            >
+        >,
         pvb::positive_sequence_opt_vb<
-            pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::varintg8iu_block>
+            pvb::partitioned_vb_sequence_opt_vb<
+                pvb::maskedvbyte_block_opt_vb, // Encoder1
+                pvb::varintg8iu_block, // Encoder2
+                pvb::partitioned_sequence_enumerator_opt_vb<
+                    pvb::indexed_sequence_opt_vb<
+                        pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
+                        pvb::block_sequence_opt_vb<pvb::varintg8iu_block> // Encoder2 Enumerator
+                    >
+                >
+            >
         >
     >;
 
 using masked_stream_index =
     freq_index_opt_vb<
-        pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::streamvbyte_block>,
+        pvb::partitioned_vb_sequence_opt_vb<
+            pvb::maskedvbyte_block_opt_vb, // Encoder1
+            pvb::streamvbyte_block, // Encoder2
+            pvb::partitioned_sequence_enumerator_opt_vb<
+                pvb::indexed_sequence_opt_vb<
+                    pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
+                    pvb::block_sequence_opt_vb<pvb::streamvbyte_block> // Encoder2 Enumerator
+                >
+            >
+        >,
         pvb::positive_sequence_opt_vb<
-            pvb::partitioned_vb_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb, pvb::streamvbyte_block>
+            pvb::partitioned_vb_sequence_opt_vb<
+                pvb::maskedvbyte_block_opt_vb, // Encoder1
+                pvb::streamvbyte_block, // Encoder2
+                pvb::partitioned_sequence_enumerator_opt_vb<
+                    pvb::indexed_sequence_opt_vb<
+                        pvb::block_sequence_opt_vb<pvb::maskedvbyte_block_opt_vb>, // Encoder1 Enumerator
+                        pvb::block_sequence_opt_vb<pvb::streamvbyte_block> // Encoder2 Enumerator
+                    >
+                >
+            >
         >
     >;
-
 
 }  // namespace pisa
 
 #define PISA_INDEX_TYPES                                                                    \
     (ef)(single)(pefuniform)(pefopt)(block_optpfor)(block_varintg8iu)(block_streamvbyte)(   \
         block_maskedvbyte)(block_interpolative)(block_qmx)(block_varintgb)(block_simple8b)( \
-        block_simple16)(block_simdbp)(masked_vgb)(masked_vg8iu)(masked_stream)
+        block_simple16)(block_simdbp)(masked_bitvector)(masked_vgb)(masked_vg8iu)(masked_stream)
 #define PISA_BLOCK_INDEX_TYPES                                                                    \
     (block_optpfor)(block_varintg8iu)(block_streamvbyte)(block_maskedvbyte)(block_interpolative)( \
         block_qmx)(block_varintgb)(block_simple8b)(block_simple16)(block_simdbp)

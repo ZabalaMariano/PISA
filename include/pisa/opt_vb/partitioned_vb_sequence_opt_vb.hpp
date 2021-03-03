@@ -6,23 +6,19 @@
 #include "../codec/integer_codes.hpp"
 #include "./util_opt_vb.hpp"
 #include "./indexed_sequence_opt_vb.hpp"
-
+#include "./compact_ranked_bitvector_opt_vb.hpp"
 #include "./optimizer_opt_vb.hpp"
 
 #include <limits>
 #include <cmath>
+#include <type_traits>
 
 namespace pvb {
 
-    template<typename VByteBlockType, typename VByteBlockType2>
+    template<typename VByteBlockType, typename VByteBlockType2, typename Enumerator>
     struct partitioned_vb_sequence_opt_vb {
 
-        typedef partitioned_sequence_enumerator_opt_vb<
-                    indexed_sequence_opt_vb<
-                        block_sequence_opt_vb<VByteBlockType>,
-                        block_sequence_opt_vb<VByteBlockType2>
-                    >
-                > enumerator;
+        typedef Enumerator enumerator;
 
         typedef VByteBlockType  VBBlock;
         typedef VByteBlockType2 RBBlock;
@@ -172,7 +168,8 @@ namespace pvb {
                     break;
                 case RBBlock::type:
                     bvb.append_bits(type, type_bits);
-                    push_pad(bvb);
+                    if (!std::is_same<RBBlock, pvb::compact_ranked_bitvector_opt_vb>::value)
+                        push_pad(bvb);
                     RBBlock::write(bvb, begin, base, universe, n, params);
                     break;
                 default:
