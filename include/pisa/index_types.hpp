@@ -41,16 +41,16 @@ using pefuniform_index =
 using pefopt_index =
     freq_index<partitioned_sequence<>, positive_sequence<partitioned_sequence<strict_sequence>>>;
 
-// using block_optpfor_index = block_freq_index<pisa::optpfor_block>;
-// using block_varintg8iu_index = block_freq_index<pisa::varint_G8IU_block>;
-// using block_streamvbyte_index = block_freq_index<pisa::streamvbyte_block>;
-// using block_maskedvbyte_index = block_freq_index<pisa::maskedvbyte_block>;
-// using block_varintgb_index = block_freq_index<pisa::varintgb_block>;
-// using block_interpolative_index = block_freq_index<pisa::interpolative_block>;
-// using block_qmx_index = block_freq_index<pisa::qmx_block>;
-// using block_simple8b_index = block_freq_index<pisa::simple8b_block>;
-// using block_simple16_index = block_freq_index<pisa::simple16_block>;
-// using block_simdbp_index = block_freq_index<pisa::simdbp_block>;
+using block_optpfor_index = block_freq_index<pisa::optpfor_block>;
+using block_varintg8iu_index = block_freq_index<pisa::varint_G8IU_block>;
+using block_streamvbyte_index = block_freq_index<pisa::streamvbyte_block>;
+using block_maskedvbyte_index = block_freq_index<pisa::maskedvbyte_block>;
+using block_varintgb_index = block_freq_index<pisa::varintgb_block>;
+using block_interpolative_index = block_freq_index<pisa::interpolative_block>;
+using block_qmx_index = block_freq_index<pisa::qmx_block>;
+using block_simple8b_index = block_freq_index<pisa::simple8b_block>;
+using block_simple16_index = block_freq_index<pisa::simple16_block>;
+using block_simdbp_index = block_freq_index<pisa::simdbp_block>;
 
 using masked_bitvector_index =
     freq_index_opt_vb<
@@ -158,16 +158,10 @@ using masked_stream_index =
 
 }  // namespace pisa
 
-// #define PISA_INDEX_TYPES                                                                    \
-//     (ef)(single)(pefuniform)(pefopt)(block_optpfor)(block_varintg8iu)(block_streamvbyte)(   \
-//         block_maskedvbyte)(block_interpolative)(block_qmx)(block_varintgb)(block_simple8b)( \
-//         block_simple16)(block_simdbp)(masked_bitvector)(masked_vgb)(masked_vg8iu)(masked_stream)
-//  #define PISA_BLOCK_INDEX_TYPES                                                                    \
-//     (block_optpfor)(block_varintg8iu)(block_streamvbyte)(block_maskedvbyte)(block_interpolative)( \
-//         block_qmx)(block_varintgb)(block_simple8b)(block_simple16)(block_simdbp)
-
 #define PISA_INDEX_TYPES                                                                    \
-    (ef)(single)(pefuniform)(pefopt)(masked_bitvector)(masked_vgb)(masked_vg8iu)(masked_stream)
-#define PISA_BLOCK_INDEX_TYPES                                                                    \
+    (ef)(single)(pefuniform)(pefopt)(block_optpfor)(block_varintg8iu)(block_streamvbyte)(   \
+        block_maskedvbyte)(block_interpolative)(block_qmx)(block_varintgb)(block_simple8b)( \
+        block_simple16)(block_simdbp)(masked_bitvector)(masked_vgb)(masked_vg8iu)(masked_stream)
+ #define PISA_BLOCK_INDEX_TYPES                                                                    \
     (block_optpfor)(block_varintg8iu)(block_streamvbyte)(block_maskedvbyte)(block_interpolative)( \
         block_qmx)(block_varintgb)(block_simple8b)(block_simple16)(block_simdbp)

@@ -21,7 +21,8 @@ class freq_index {
   public:
     using index_layout_tag = BitVectorIndexTag;
 
-    freq_index() = default;
+    freq_index(bool queries) : queries(queries)
+    {};
 
     explicit freq_index(MemorySource source) : m_source(std::move(source))
     {
@@ -189,5 +190,6 @@ class freq_index {
     bitvector_collection m_docs_sequences;
     bitvector_collection m_freqs_sequences;
     MemorySource m_source;
+    bool queries;
 };
 }  // namespace pisa
