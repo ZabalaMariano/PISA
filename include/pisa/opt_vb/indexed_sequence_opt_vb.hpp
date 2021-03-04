@@ -89,7 +89,7 @@ struct indexed_sequence_opt_vb {
     public:
         typedef std::pair<uint64_t, uint64_t> value_type;  // (position, value)
 
-        enumerator(bool queries): queries(queries)
+        enumerator()
         {}
 
         enumerator(pisa::bit_vector const& bv, uint64_t offset,
