@@ -21,7 +21,7 @@ class freq_index {
   public:
     using index_layout_tag = BitVectorIndexTag;
 
-    freq_index(bool queries) : queries(queries)
+    freq_index(bool queries=true) : queries(queries)
     {};
 
     explicit freq_index(MemorySource source) : m_source(std::move(source))

@@ -22,7 +22,7 @@ class block_freq_index {
   public:
     using index_layout_tag = BlockIndexTag;
     
-    block_freq_index(bool queries) : queries(queries)
+    block_freq_index(bool queries=true) : queries(queries)
     {};
     
     explicit block_freq_index(MemorySource source) : m_source(std::move(source))
