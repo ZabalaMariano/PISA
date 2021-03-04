@@ -19,13 +19,14 @@ namespace pvb {
 
         partitioned_sequence_enumerator_opt_vb(pisa::bit_vector const& bv, uint64_t offset,
                                         uint64_t universe, uint64_t n,
-                                        global_parameters_opt_vb const& params)
+                                        global_parameters_opt_vb const& params, bool queries)
             : m_params(&params)
             , m_size(n)
             , m_universe(universe)
             , m_position(0)
             , m_cur_partition(0)
             , m_bv(&bv)
+            , queries(queries)
         {
             pisa::bit_vector::enumerator it(bv, offset);
             m_partitions = pisa::read_gamma_nonzero(it);
@@ -44,7 +45,7 @@ namespace pvb {
                 eat_pad(it, alignment);
 
                 m_partition_enum = base_sequence_enumerator(
-                    *m_bv, it.position(), ub + 1, n, *m_params
+                    *m_bv, it.position(), ub + 1, n, *m_params, queries
                 );
                 m_cur_upper_bound = m_cur_base + ub;
 
@@ -214,7 +215,7 @@ namespace pvb {
                 (*m_bv, partition_begin,
                  m_cur_upper_bound - m_cur_base + 1,
                  m_cur_end - m_cur_begin,
-                 *m_params);
+                 *m_params, queries);
         }
 
         // void next_partition()
@@ -255,7 +256,8 @@ namespace pvb {
         uint64_t m_cur_end;
         uint64_t m_cur_base;
         uint64_t m_cur_upper_bound;
-
+        bool queries;
+        
         pisa::bit_vector const* m_bv;
         compact_elias_fano_opt_vb::enumerator m_sizes;
         compact_elias_fano_opt_vb::enumerator m_upper_bounds;
