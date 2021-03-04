@@ -168,7 +168,7 @@ void compress_index(
 
     params_opt_vb.log_partition_size = configuration::get().log_partition_size;
     typename CollectionType::builder builder(input.num_docs(),params,params_opt_vb);
-    
+
     size_t postings = 0;
     {
         pisa::progress progress("Create index", input.size());
@@ -216,7 +216,7 @@ void compress_index(
         }
     }
 
-    CollectionType coll(false);
+    CollectionType coll;
     builder.build(coll);
     double elapsed_secs = (get_time_usecs() - tick) / 1000000;
     spdlog::info("{} collection built in {} seconds", seq_type, elapsed_secs);
