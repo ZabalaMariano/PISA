@@ -89,10 +89,11 @@ struct indexed_sequence_opt_vb {
     public:
         typedef std::pair<uint64_t, uint64_t> value_type;  // (position, value)
 
-        enumerator() {}
+        enumerator()
+        {}
 
         enumerator(pisa::bit_vector const& bv, uint64_t offset,
-                   uint64_t universe, uint64_t n, global_parameters_opt_vb const& params) {
+                   uint64_t universe, uint64_t n, global_parameters_opt_vb const& params, bool queries) {
             m_type = index_type(bv.get_word56(offset) &
                                 ((uint64_t(1) << type_bits) - 1));
 
@@ -113,13 +114,13 @@ struct indexed_sequence_opt_vb {
                     // if (n > 2048)
                     //     params.sparse_avg_gap += universe * 1.0 / n;
                     m_th_enumerator = typename Encoder::enumerator(
-                        bv, offset + type_bits + pad, universe, n, params);
+                        bv, offset + type_bits + pad, universe, n, params, queries);
                     break;
                 case ranked_bitvector:
                     // if (n > 2048)
                     //     params.dense_avg_gap += universe * 1.0 / n;
                     m_rb_enumerator = typename Encoder2::enumerator(
-                        bv, offset + type_bits + pad, universe, n, params);
+                        bv, offset + type_bits + pad, universe, n, params, queries);
                     break;
                 default:
                     throw std::invalid_argument("Unsupported type");
@@ -152,6 +153,7 @@ struct indexed_sequence_opt_vb {
 #undef ENUMERATOR_VOID_METHOD
 
         index_type m_type;
+        bool queries;
         union {
             typename Encoder::enumerator m_th_enumerator;
             typename Encoder2::enumerator m_rb_enumerator;

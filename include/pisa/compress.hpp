@@ -168,7 +168,7 @@ void compress_index(
 
     params_opt_vb.log_partition_size = configuration::get().log_partition_size;
     typename CollectionType::builder builder(input.num_docs(),params,params_opt_vb);
-    
+
     size_t postings = 0;
     {
         pisa::progress progress("Create index", input.size());

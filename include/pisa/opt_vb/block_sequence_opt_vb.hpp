@@ -56,7 +56,8 @@ namespace pvb {
             enumerator(pisa::bit_vector const& bv,
                        uint64_t offset,
                        uint64_t universe, uint64_t n,
-                       global_parameters_opt_vb const& params)
+                       global_parameters_opt_vb const& params,
+                       bool queries)
                 : m_n(n)
                 , m_universe(universe)
                 , m_pos_in_block(0)
@@ -65,6 +66,7 @@ namespace pvb {
                 , m_blocks(pisa::ceil_div(n, BlockCodec::block_size))
                 , m_x(0)
                 , m_n_aux(n)
+                , queries(queries)
             {
                 (void) params;
                 assert(offset % alignment == 0);
@@ -86,7 +88,7 @@ namespace pvb {
                                     ? BlockCodec::block_size
                                     : m_n - (m_blocks - 1) * BlockCodec::block_size;
                 m_x = 0;
-                m_ptr = BlockCodec::decode(m_ptr, m_buffer, m_universe, block_size, m_x, m_n_aux, m_cur_block == m_blocks);
+                m_ptr = BlockCodec::decode(m_ptr, m_buffer, m_universe, block_size, m_x, m_n_aux, m_cur_block == m_blocks, queries);
                 m_n += m_x;  
                 m_blocks = pisa::ceil_div(m_n, BlockCodec::block_size);
                 uint32_t last = m_cur_block > 1 ? m_value : uint32_t(-1);
@@ -162,6 +164,7 @@ namespace pvb {
             uint64_t m_universe;
             uint32_t m_pos_in_block;
             uint32_t m_value;
+            bool queries;
 
             uint32_t m_cur_block;
             uint32_t m_blocks;

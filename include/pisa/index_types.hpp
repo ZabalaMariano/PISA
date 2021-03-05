@@ -162,6 +162,6 @@ using masked_stream_index =
     (ef)(single)(pefuniform)(pefopt)(block_optpfor)(block_varintg8iu)(block_streamvbyte)(   \
         block_maskedvbyte)(block_interpolative)(block_qmx)(block_varintgb)(block_simple8b)( \
         block_simple16)(block_simdbp)(masked_bitvector)(masked_vgb)(masked_vg8iu)(masked_stream)
-#define PISA_BLOCK_INDEX_TYPES                                                                    \
+ #define PISA_BLOCK_INDEX_TYPES                                                                    \
     (block_optpfor)(block_varintg8iu)(block_streamvbyte)(block_maskedvbyte)(block_interpolative)( \
         block_qmx)(block_varintgb)(block_simple8b)(block_simple16)(block_simdbp)

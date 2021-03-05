@@ -20,12 +20,15 @@ struct BitVectorIndexTag;
 
         using index_layout_tag = BitVectorIndexTag;
 
-        freq_index_opt_vb()
+        freq_index_opt_vb(bool queries = false)
             : m_params()
             , m_num_docs(0)
+            , queries(queries)
         {}
 
-        explicit freq_index_opt_vb(MemorySource source) : m_source(std::move(source))
+        explicit freq_index_opt_vb(MemorySource source, bool queries = true)
+          : m_source(std::move(source))
+          , queries(queries)
         {
             mapper::map(*this, m_source.data(), mapper::map_flags::warmup);
         }
@@ -196,14 +199,16 @@ struct BitVectorIndexTag;
             typename DocsSequence::enumerator docs_enum(m_docs_sequences.bits(),
                                                         docs_it.position(),
                                                         num_docs(), n,
-                                                        m_params);
-            
+                                                        m_params,
+                                                        queries);
+
             auto freqs_it = m_freqs_sequences.get(m_params, i);
             typename FreqsSequence::enumerator freqs_enum(m_freqs_sequences.bits(),
                                                           freqs_it.position(),
                                                           occurrences + 1, n,
-                                                          m_params);
-            
+                                                          m_params,
+                                                          queries);
+
             return document_enumerator(docs_enum, freqs_enum);
         }
 
@@ -238,6 +243,7 @@ struct BitVectorIndexTag;
         uint64_t m_num_docs;
         pvb::bitvector_collection_opt_vb m_docs_sequences;
         pvb::bitvector_collection_opt_vb m_freqs_sequences;
+        bool queries;
         MemorySource m_source;
     };
 }

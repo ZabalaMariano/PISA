@@ -21,7 +21,10 @@ template <typename BlockCodec, bool Profile = false>
 class block_freq_index {
   public:
     using index_layout_tag = BlockIndexTag;
-    block_freq_index() = default;
+    
+    block_freq_index(bool queries=true) : queries(queries)
+    {};
+    
     explicit block_freq_index(MemorySource source) : m_source(std::move(source))
     {
         mapper::map(*this, m_source.data(), mapper::map_flags::warmup);
@@ -226,5 +229,6 @@ class block_freq_index {
     bit_vector m_endpoints;
     mapper::mappable_vector<uint8_t> m_lists;
     MemorySource m_source;
+    bool queries;
 };
 }  // namespace pisa

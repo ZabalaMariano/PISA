@@ -51,8 +51,8 @@ namespace pvb {
 
             enumerator(pisa::bit_vector const& bv, uint64_t offset,
                        uint64_t universe, uint64_t n,
-                       global_parameters_opt_vb const& params)
-                : m_base_enum(bv, offset, universe, n, params)
+                       global_parameters_opt_vb const& params, bool queries)
+                : m_base_enum(bv, offset, universe, n, params, queries)
                 , m_position(m_base_enum.size())
             {}
 
