@@ -444,14 +444,13 @@ namespace pvb
         {
             if (x == 0 or x - base == 0)
             {
-                return 8 + 100;
+                return 8;
             }
 
             assert(x >= base);
             return (8 *
                     pisa::ceil_div(ceil_log2(x - base + 1), // delta gap
-                                   7)) +
-                   100;
+                                   7));
         }
 
         template <typename Iterator>
