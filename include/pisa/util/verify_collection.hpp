@@ -17,6 +17,7 @@ void verify_collection(InputCollection const& input, const char* filename)
     size_t size = 0;
     spdlog::info("Checking the written data, just to be extra safe...");
     size_t s = 0;
+    double tick = get_time_usecs();
     for (auto seq: input) {
         size = seq.docs.size();
         auto e = coll[s];
@@ -27,7 +28,6 @@ void verify_collection(InputCollection const& input, const char* filename)
         for (size_t i = 0; i < e.size(); ++i, e.next()) {
             uint64_t docid = *(seq.docs.begin() + i);
             uint64_t freq = *(seq.freqs.begin() + i);
-            
             if (docid != e.docid()) {
                 spdlog::error("docid in sequence {} differs at position {}!", s, i);
                 spdlog::error("{} != {}", e.docid(), docid);
@@ -35,7 +35,6 @@ void verify_collection(InputCollection const& input, const char* filename)
 
                 exit(1);
             }
-
             if (freq != e.freq()) {
                 spdlog::error("freq in sequence {} differs at position {}!", s, i);
                 spdlog::error("{} != {}", e.freq(), freq);
@@ -46,6 +45,8 @@ void verify_collection(InputCollection const& input, const char* filename)
         }
         s += 1;
     }
+    double elapsed_secs = (get_time_usecs() - tick) / 1000000;
+    spdlog::info("Collection decompress in {} seconds", elapsed_secs);
     spdlog::info("Everything is OK!");
 }
 

@@ -319,7 +319,7 @@ namespace pvb
 
         // we only allow varint to be inlined (others have DS2I_NOILINE)
         static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint64_t& m_x, uint64_t m_n, bool ultimo_bloque, bool queries)
+                                    uint32_t& m_x, uint32_t m_n, bool ultimo_bloque, bool queries)
         {           
             static codec_type varint_codec; // decodeBlock is thread-safe
 
@@ -359,8 +359,7 @@ namespace pvb
 
     struct streamvbyte_block
     {
-        //static const uint64_t block_size = constants::block_size;
-        static const uint64_t block_size = 102400;//constants::block_size;
+        static const uint64_t block_size = constants::block_size;
         static const int type = 1;
 
         static inline uint64_t posting_cost(posting_type x, uint64_t base)
@@ -402,16 +401,30 @@ namespace pvb
         {
             (void)params;
             std::vector<uint32_t> gaps;
-            gaps.reserve(n);
+            std::vector<uint8_t> out;
             uint32_t last_doc(-1);
-            for (size_t i = 0; i < n; ++i)
+            size_t j = 0;
+            while (j+128<n){
+                gaps.clear();
+                gaps.reserve(128);
+                for (int i = 0; i < 128; ++i,++j)
+                {
+                    uint32_t doc = *(begin + j) - base;
+                    gaps.push_back(doc - last_doc); // delta gap
+                    last_doc = doc;
+                }
+                encode(gaps.data(), universe, 128, out);
+            }
+            gaps.clear();
+            int size = n-j;
+            gaps.reserve(size);
+            for (int i = 0; i < size; ++i,++j)
             {
-                uint32_t doc = *(begin + i) - base;
+                uint32_t doc = *(begin + j) - base;
                 gaps.push_back(doc - last_doc); // delta gap
                 last_doc = doc;
             }
-            std::vector<uint8_t> out;
-            encode(gaps.data(), universe, n, out);
+            encode(gaps.data(), universe, size, out);
             for (uint8_t v : out)
             {
                 bvb.append_bits(v, 8);
@@ -427,8 +440,8 @@ namespace pvb
             out.insert(out.end(), buf.data(), buf.data() + out_len);
         }
 
-        static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint64_t&, uint64_t, bool, bool)
+        static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, uint32_t n, 
+                                    uint32_t&, uint32_t, bool, bool)
         {
             auto read = streamvbyte_decode(in, out, n);
             return in + read;
@@ -506,7 +519,7 @@ namespace pvb
         }
 
         static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint64_t&, uint64_t, bool, bool)
+                                    uint32_t&, uint32_t, bool, bool)
         {
             (void)sum_of_values;
             auto read = masked_vbyte_decode(in, out, n);
@@ -591,7 +604,7 @@ namespace pvb
         }
 
         static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint64_t&, uint64_t, bool, bool)
+                                    uint32_t&, uint32_t, bool, bool)
         {
             (void)sum_of_values;
             VarIntGB<false> varintgb_codec;

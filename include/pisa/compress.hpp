@@ -71,7 +71,8 @@ void compress_index_streaming(
     pisa::global_parameters const& params,
     std::string const& output_filename,
     std::optional<QuantizedScorer<Wand>> quantized_scorer,
-    bool check)
+    bool check,
+    std::string const& seq_type)
 {
     spdlog::info("Processing {} documents (streaming)", input.num_docs());
     double tick = get_time_usecs();
@@ -135,8 +136,7 @@ void compress_index(
     std::string const& seq_type,
     std::optional<std::string> const& wand_data_filename,
     ScorerParams const& scorer_params,
-    bool quantized,
-    std::string const& index_encoding
+    bool quantized
     )
 {
     if constexpr (std::is_same_v<typename CollectionType::index_layout_tag, BlockIndexTag>) {
@@ -159,7 +159,7 @@ void compress_index(
             quantized_scorer = QuantizedScorer(std::move(scorer), quantizer);
         }
         compress_index_streaming<CollectionType, WandType>(
-            input, params, *output_filename, std::move(quantized_scorer), check);
+            input, params, *output_filename, std::move(quantized_scorer), check, seq_type);
         return;
     }
 
@@ -266,8 +266,7 @@ void compress(
             index_encoding,                                                      \
             wand_data_filename,                                                  \
             scorer_params,                                                       \
-            quantize,                                                            \
-            index_encoding);                                                     \
+            quantize);                                                           \
         /**/
         BOOST_PP_SEQ_FOR_EACH(LOOP_BODY, _, PISA_INDEX_TYPES);
 #undef LOOP_BODY

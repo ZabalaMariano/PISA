@@ -27,7 +27,7 @@ namespace pvb {
         static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const& params)//configuration_opt_vb const& conf)
+                          global_parameters_opt_vb const& params)
         {
             assert(n > 0);
             auto partition = optimizer_opt_vb<VByteBlockType, VByteBlockType2>::compute_partition(begin, n);
@@ -36,7 +36,7 @@ namespace pvb {
 
             pisa::write_gamma_nonzero(bvb, partitions);
 
-            if (partitions == 1) {
+            if (partitions == 1) {                
                 auto const& singleton = partition.front();
                 uint64_t base = *begin;
                 uint64_t universe_bits = ceil_log2(universe);
@@ -55,7 +55,7 @@ namespace pvb {
                 write_block(bvb, begin, singleton.type, base,
                             *(begin + n - 1) + 1,
                             n, params);
-
+                
             } else {
                 pisa::bit_vector_builder bv_sequences;
                 std::vector<uint64_t> sizes;
@@ -68,9 +68,7 @@ namespace pvb {
 
                 auto b = begin;
                 for (uint64_t prev_size = 0, i = 0; i < partitions; ++i) {
-
-                    uint64_t curr_base =
-                        i == 0
+                    uint64_t curr_base = i == 0
                            ? *(begin)
                            : *(partition[i - 1].begin - 1) + 1;
                     uint64_t curr_n = std::distance(b, partition[i].begin);
@@ -119,33 +117,6 @@ namespace pvb {
             }
         }
 
-        // static void decode(succinct::bit_vector const& bv,
-        //                    uint32_t* out, uint64_t offset,
-        //                    uint64_t universe, uint64_t n)
-        // {
-        //     global_parameters params;
-        //     enumerator e(bv, offset, universe, n, params);
-        //     uint64_t num_partitions = e.m_partitions;
-
-        //     if (num_partitions == 1) {
-        //         e.m_partition_enum.decode(out);
-        //         return;
-        //     }
-
-        //     e.switch_partition(0);
-        //     uint64_t i = 0;
-
-        //     while (true) {
-        //         e.m_partition_enum.decode(out);
-        //         ++i;
-        //         if (i != num_partitions) {
-        //             e.next_partition();
-        //         } else {
-        //             break;
-        //         }
-        //     }
-        // }
-
     private:
 
         static const uint64_t type_bits = indexed_sequence_opt_vb<
@@ -162,18 +133,27 @@ namespace pvb {
             assert(n > 0);
             switch (type) {
                 case VBBlock::type:
+                {
                     bvb.append_bits(type, type_bits);
                     push_pad(bvb);
                     VBBlock::write(bvb, begin, base, universe, n, params);
                     break;
+                    }
                 case RBBlock::type:
+                {
                     bvb.append_bits(type, type_bits);
                     if (!std::is_same<RBBlock, pvb::compact_ranked_bitvector_opt_vb>::value)
                         push_pad(bvb);
                     RBBlock::write(bvb, begin, base, universe, n, params);
                     break;
+                }
                 default:
+                {
+                    //bvb.append_bits(1, type_bits);//*
+                    //push_pad(bvb);//*
+                    //RBBlock::write(bvb, begin, base, universe, n, params);//*
                     assert(false);
+                }
             }
         }
     };

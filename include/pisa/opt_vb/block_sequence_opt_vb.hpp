@@ -84,7 +84,7 @@ namespace pvb {
             void decode_next_block()
             {
                 ++m_cur_block;
-                uint64_t block_size = m_cur_block < m_blocks
+                uint32_t block_size = m_cur_block < m_blocks
                                     ? BlockCodec::block_size
                                     : m_n - (m_blocks - 1) * BlockCodec::block_size;
                 m_x = 0;
@@ -158,9 +158,9 @@ namespace pvb {
             }
 
         private:
-            uint64_t m_x;
+            uint32_t m_x;
             uint64_t m_n;
-            uint64_t m_n_aux;
+            uint32_t m_n_aux;
             uint64_t m_universe;
             uint32_t m_pos_in_block;
             uint32_t m_value;
