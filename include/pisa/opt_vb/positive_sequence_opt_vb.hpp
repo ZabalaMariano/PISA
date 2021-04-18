@@ -17,21 +17,34 @@ namespace pvb {
         static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const& params)//configuration_opt_vb const& conf)
+                          global_parameters_opt_vb const& params,
+                        uint64_t& dense_short_freq, uint64_t& dense_medium_freq, uint64_t& dense_large_freq,
+                        uint64_t& sparse_short_freq, uint64_t& sparse_medium_freq, uint64_t& sparse_large_freq,
+                        uint64_t& dense_short_cost_freq, uint64_t& dense_medium_cost_freq, uint64_t& dense_large_cost_freq,
+                        uint64_t& sparse_short_cost_freq, uint64_t& sparse_medium_cost_freq, uint64_t& sparse_large_cost_freq,
+                        uint64_t& cantidad_integers_con_interpolative_freq,
+                        uint64_t& cantidad_integers_con_varintg8iu_freq, bool dense_sparse)
         {
+
             assert(n > 0);
             std::vector<uint64_t> prefixes;
             prefixes.reserve(n);
             auto it = begin;
             prefixes.push_back(*it);
             ++it;
-            for (uint64_t i = 1; i < n; ++i, ++it) {
+            for (uint64_t i = 1; i < n; ++i, ++it) {//Reverse dgaps for when dgaps is apply to freqs in "write" from "block_codecs"
                 prefixes.push_back(prefixes.back() + *it);
             }
             base_sequence_type::write(bvb,
                                       prefixes.begin(),
                                       universe, n,
-                                      params);
+                                      params,
+                                    dense_short_freq, dense_medium_freq, dense_large_freq,
+                                    sparse_short_freq, sparse_medium_freq, sparse_large_freq,
+                                    dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
+                                    sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
+                                    cantidad_integers_con_interpolative_freq,
+                                    cantidad_integers_con_varintg8iu_freq, dense_sparse);
         }
 
         static void decode(pisa::bit_vector const& bv,

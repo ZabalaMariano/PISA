@@ -15,6 +15,11 @@ template <typename Index>
     std::vector<cursor> cursors;
     cursors.reserve(terms.size());
     std::transform(terms.begin(), terms.end(), std::back_inserter(cursors), [&](auto&& term) {
+        /*double tick = get_time_usecs();
+        cursor indexterm = index[term];
+        double elapsed_secs = (get_time_usecs() - tick) / 1000;
+        std::cout<<"cursor - "<<elapsed_secs<<" miliseconds"<<std::endl;
+        return indexterm;*/
         return index[term];
     });
 

@@ -27,7 +27,13 @@ namespace pvb {
         static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const& params)
+                          global_parameters_opt_vb const& params,
+                          uint64_t& dense_short, uint64_t& dense_medium, uint64_t& dense_large,
+                          uint64_t& sparse_short, uint64_t& sparse_medium, uint64_t& sparse_large,
+                          uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
+                          uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
+                          uint64_t& cantidad_integers_con_interpolative,
+                          uint64_t& cantidad_integers_con_varintg8iu, bool dense_sparse)
         {
             assert(n > 0);
             auto partition = optimizer_opt_vb<VByteBlockType, VByteBlockType2>::compute_partition(begin, n);
@@ -54,7 +60,13 @@ namespace pvb {
                 push_pad(bvb);
                 write_block(bvb, begin, singleton.type, base,
                             *(begin + n - 1) + 1,
-                            n, params);
+                            n, params, n,
+                            dense_short, dense_medium, dense_large,
+                            sparse_short, sparse_medium, sparse_large,
+                            dense_short_cost, dense_medium_cost, dense_large_cost,
+                            sparse_short_cost, sparse_medium_cost, sparse_large_cost,
+                            cantidad_integers_con_interpolative,
+                            cantidad_integers_con_varintg8iu, dense_sparse);
                 
             } else {
                 pisa::bit_vector_builder bv_sequences;
@@ -79,7 +91,13 @@ namespace pvb {
                                 partition[i].type,
                                 curr_base,
                                 curr_universe + 1,
-                                curr_n, params);
+                                curr_n, params, n,
+                                dense_short, dense_medium, dense_large,
+                                sparse_short, sparse_medium, sparse_large,
+                                dense_short_cost, dense_medium_cost, dense_large_cost,
+                                sparse_short_cost, sparse_medium_cost, sparse_large_cost,
+                                cantidad_integers_con_interpolative,
+                                cantidad_integers_con_varintg8iu, dense_sparse);
 
                     sizes.push_back(prev_size + curr_n);
                     endpoints.push_back(bv_sequences.size());
@@ -128,12 +146,33 @@ namespace pvb {
         static void write_block(pisa::bit_vector_builder& bvb,
                                 Iterator begin, int type,
                                 uint64_t base, uint64_t universe, uint64_t n,
-                                global_parameters_opt_vb const& params)
+                                global_parameters_opt_vb const& params, uint64_t size_posting_list,
+                                uint64_t& dense_short, uint64_t& dense_medium, uint64_t& dense_large,
+                                uint64_t& sparse_short, uint64_t& sparse_medium, uint64_t& sparse_large,
+                                uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
+                                uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
+                                uint64_t& cantidad_integers_con_interpolative,
+                                uint64_t& cantidad_integers_con_varintg8iu, bool dense_sparse)
         {
             assert(n > 0);
             switch (type) {
                 case VBBlock::type:
                 {
+                    uint64_t cost_encoder1 = VBBlock::bitsize(begin, params, universe, n);
+
+                    if(dense_sparse){
+                        if (size_posting_list < 10000) {
+                            dense_short+=n;
+                            dense_short_cost+=cost_encoder1;
+                        } else if (size_posting_list < 7000000) {
+                            dense_medium+=n;
+                            dense_medium_cost+=cost_encoder1;
+                        } else {
+                            dense_large+=n;
+                            dense_large_cost+=cost_encoder1;
+                        }
+                    }
+
                     bvb.append_bits(type, type_bits);
                     push_pad(bvb);
                     VBBlock::write(bvb, begin, base, universe, n, params);
@@ -141,17 +180,39 @@ namespace pvb {
                     }
                 case RBBlock::type:
                 {
-                    bvb.append_bits(type, type_bits);
-                    if (!std::is_same<RBBlock, pvb::compact_ranked_bitvector_opt_vb>::value)
+                    if (!std::is_same<RBBlock, pvb::compact_ranked_bitvector_opt_vb>::value){
+                        uint64_t cost_encoder2 = RBBlock::bitsize(begin, params, universe, n);
+
+                        if(dense_sparse){
+                            if (size_posting_list < 10000) {
+                                sparse_short+=n;
+                                sparse_short_cost+=cost_encoder2;
+                            } else if (size_posting_list < 7000000) {
+                                sparse_medium+=n;
+                                sparse_medium_cost+=cost_encoder2;
+                            } else {
+                                sparse_large+=n;
+                                sparse_large_cost+=cost_encoder2;
+                            }
+
+                            if(n<8){
+                                cantidad_integers_con_interpolative += n;
+                            } else {
+                                cantidad_integers_con_varintg8iu += n;
+                            }
+                        }
+
+                        bvb.append_bits(type, type_bits);
                         push_pad(bvb);
-                    RBBlock::write(bvb, begin, base, universe, n, params);
+                        RBBlock::write(bvb, begin, base, universe, n, params);
+                    } else {
+                        bvb.append_bits(type, type_bits);
+                        RBBlock::write(bvb, begin, base, universe, n, params);   
+                    }
                     break;
                 }
                 default:
                 {
-                    //bvb.append_bits(1, type_bits);//*
-                    //push_pad(bvb);//*
-                    //RBBlock::write(bvb, begin, base, universe, n, params);//*
                     assert(false);
                 }
             }

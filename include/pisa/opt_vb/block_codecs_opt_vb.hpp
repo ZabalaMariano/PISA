@@ -359,7 +359,7 @@ namespace pvb
 
     struct streamvbyte_block
     {
-        static const uint64_t block_size = constants::block_size;
+        static const uint64_t block_size = 512;//constants::block_size;
         static const int type = 1;
 
         static inline uint64_t posting_cost(posting_type x, uint64_t base)
@@ -391,6 +391,7 @@ namespace pvb
                 cost += posting_cost(*it, base);
                 base = *it;
             }
+            if (cost % 8 != 0){cost += 8-(cost % 8);}
             return cost;
         }
 
@@ -404,16 +405,16 @@ namespace pvb
             std::vector<uint8_t> out;
             uint32_t last_doc(-1);
             size_t j = 0;
-            while (j+128<n){
+            while (j+512<n){
                 gaps.clear();
-                gaps.reserve(128);
-                for (int i = 0; i < 128; ++i,++j)
+                gaps.reserve(512);
+                for (int i = 0; i < 512; ++i,++j)
                 {
                     uint32_t doc = *(begin + j) - base;
                     gaps.push_back(doc - last_doc); // delta gap
                     last_doc = doc;
                 }
-                encode(gaps.data(), universe, 128, out);
+                encode(gaps.data(), universe, 512, out);
             }
             gaps.clear();
             int size = n-j;

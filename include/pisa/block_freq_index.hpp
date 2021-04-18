@@ -40,11 +40,20 @@ class block_freq_index {
         }
 
         template <typename DocsIterator, typename FreqsIterator>
-        void add_posting_list(
-            uint64_t n,
-            DocsIterator docs_begin,
-            FreqsIterator freqs_begin,
-            uint64_t /* occurrences */)//pvb::configuration_opt_vb const& conf)
+        void add_posting_list(uint64_t n, DocsIterator docs_begin,
+                            FreqsIterator freqs_begin, uint64_t occurrences,
+                            uint64_t& dense_short, uint64_t& dense_medium, uint64_t& dense_large,
+                            uint64_t& sparse_short, uint64_t& sparse_medium, uint64_t& sparse_large,
+                            uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
+                            uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
+                            uint64_t& cantidad_integers_con_interpolative,
+                            uint64_t& cantidad_integers_con_varintg8iu,
+                            uint64_t& dense_short_freq, uint64_t& dense_medium_freq, uint64_t& dense_large_freq,
+                            uint64_t& sparse_short_freq, uint64_t& sparse_medium_freq, uint64_t& sparse_large_freq,
+                            uint64_t& dense_short_cost_freq, uint64_t& dense_medium_cost_freq, uint64_t& dense_large_cost_freq,
+                            uint64_t& sparse_short_cost_freq, uint64_t& sparse_medium_cost_freq, uint64_t& sparse_large_cost_freq,
+                            uint64_t& cantidad_integers_con_interpolative_freq,
+                            uint64_t& cantidad_integers_con_varintg8iu_freq, bool dense_sparse)
         {
             if (!n) {
                 throw std::invalid_argument("List must be nonempty");
@@ -104,11 +113,20 @@ class block_freq_index {
         }
 
         template <typename DocsIterator, typename FreqsIterator>
-        void add_posting_list(
-            uint64_t n,
-            DocsIterator docs_begin,
-            FreqsIterator freqs_begin,
-            uint64_t /* occurrences */)
+        void add_posting_list(uint64_t n, DocsIterator docs_begin,
+                            FreqsIterator freqs_begin, uint64_t occurrences,
+                            uint64_t& dense_short, uint64_t& dense_medium, uint64_t& dense_large,
+                            uint64_t& sparse_short, uint64_t& sparse_medium, uint64_t& sparse_large,
+                            uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
+                            uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
+                            uint64_t& cantidad_integers_con_interpolative,
+                            uint64_t& cantidad_integers_con_varintg8iu,
+                            uint64_t& dense_short_freq, uint64_t& dense_medium_freq, uint64_t& dense_large_freq,
+                            uint64_t& sparse_short_freq, uint64_t& sparse_medium_freq, uint64_t& sparse_large_freq,
+                            uint64_t& dense_short_cost_freq, uint64_t& dense_medium_cost_freq, uint64_t& dense_large_cost_freq,
+                            uint64_t& sparse_short_cost_freq, uint64_t& sparse_medium_cost_freq, uint64_t& sparse_large_cost_freq,
+                            uint64_t& cantidad_integers_con_interpolative_freq,
+                            uint64_t& cantidad_integers_con_varintg8iu_freq, bool dense_sparse)
         {
             if (!n) {
                 throw std::invalid_argument("List must be nonempty");

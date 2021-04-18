@@ -83,6 +83,7 @@ namespace pvb {
 
             void decode_next_block()
             {
+                //*std::cout<<"decode_next_block"<<std::endl;
                 ++m_cur_block;
                 uint32_t block_size = m_cur_block < m_blocks
                                     ? BlockCodec::block_size

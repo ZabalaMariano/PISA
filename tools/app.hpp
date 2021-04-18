@@ -284,10 +284,8 @@ namespace arg {
         explicit Invert(CLI::App* app)
         {
             app->add_option("-i,--input", m_input_basename, "Forward index basename")->required();
-            app->add_option("-o,--output", m_output_basename, "Output inverted index basename")
-                ->required();
-            app->add_option(
-                "--term-count", m_term_count, "Number of distinct terms in the forward index");
+            app->add_option("-o,--output", m_output_basename, "Output inverted index basename")->required();
+            app->add_option("--term-count", m_term_count, "Number of distinct terms in the forward index");
         }
 
         [[nodiscard]] auto input_basename() const -> std::string { return m_input_basename; }
@@ -316,11 +314,13 @@ namespace arg {
             app->add_option("-c,--collection", m_input_basename, "Forward index basename")->required();
             app->add_option("-o,--output", m_output, "Output inverted index")->required();
             app->add_flag("--check", m_check, "Check the correctness of the index");
+            app->add_option("-d,--densesparse", m_dense_sparse, "Show dense sparse data")->required();
         }
 
         [[nodiscard]] auto input_basename() const -> std::string { return m_input_basename; }
         [[nodiscard]] auto output() const -> std::string { return m_output; }
         [[nodiscard]] auto check() const -> bool { return m_check; }
+        [[nodiscard]] auto dense_sparse() const -> bool { return m_dense_sparse; }
 
         /// Transform paths for `shard`.
         void apply_shard(Shard_Id shard)
@@ -333,6 +333,7 @@ namespace arg {
         std::string m_input_basename{};
         std::string m_output{};
         bool m_check = false;
+        bool m_dense_sparse{};
     };
 
     struct CreateWandData {

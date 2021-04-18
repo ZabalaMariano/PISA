@@ -14,7 +14,6 @@ struct and_query {
     auto operator()(CursorRange&& cursors, uint32_t max_docid) const
     {
         using Cursor = typename std::decay_t<CursorRange>::value_type;
-
         using Result_t = uint32_t;
 
         std::vector<Result_t> results;
@@ -54,7 +53,7 @@ struct and_query {
                 i = 1;
             }
         }
-        return results;
+        return results;//id of candidates documents (all term-id of query appear in document)
     }
 };
 

@@ -62,9 +62,11 @@ namespace pvb {
             return x - base;
         }
 
+        template <typename Iterator>
         static DS2I_FLATTEN_FUNC uint64_t
-        bitsize(global_parameters_opt_vb const& params, uint64_t universe, uint64_t n)
+        bitsize(Iterator begin, global_parameters_opt_vb const& params, uint64_t universe, uint64_t n)
         {
+            (void) begin;
             (void) params;
             (void) n;
             return universe;
