@@ -63,13 +63,12 @@ void op_perftest(
     std::string const& index_type,
     std::string const& query_type,
     size_t runs,
-    bool half,//*
+    size_t limite,//*
     std::uint64_t k,
     bool safe)
 {
     std::vector<double> query_times;
     int salir = 0;//*
-    int limite = queries.size()/2;//*
     std::size_t num_reruns = 0;
     spdlog::info("Safe: {}", safe);
 
@@ -90,11 +89,10 @@ void op_perftest(
             }
             idx += 1;
             salir++;//*
-            if(half && salir==limite){std::cout<<"BREAK"<<std::endl;break;}//*
+            if(salir==limite){std::cout<<"BREAK"<<std::endl;break;}//*
         }
     }
-    std::cout<<"SALIR = "<<salir<<" | LIMITE = "<<limite<<std::endl;//*
-    std::cout<<"TAMAÑO QUERIES = "<<queries.size()<<std::endl;//*
+    std::cout<<"LIMITE = "<<limite<<std::endl;//*
 
     if (false) {
         for (auto t: query_times) {
@@ -132,8 +130,8 @@ void perftest(
     std::string const& query_type,
     uint64_t k,
     const ScorerParams& scorer_params,
-    int runs,//*
-    bool half,//*
+    size_t runs,//*
+    size_t limite,//*
     bool extract,
     bool safe)
 {
@@ -293,7 +291,7 @@ void perftest(
         if (extract) {
             extract_times(query_fun, queries, thresholds, type, t, runs, std::cout);
         } else {
-            op_perftest(query_fun, queries, thresholds, type, t, runs, half, k, safe);
+            op_perftest(query_fun, queries, thresholds, type, t, runs, limite, k, safe);
         }
     }
 }
@@ -343,7 +341,7 @@ int main(int argc, const char** argv)
         app.k(),
         app.scorer_params(),
         app.runs(),//*
-        app.half(),//*
+        app.limite(),//*
         extract,
         safe);
     /**/

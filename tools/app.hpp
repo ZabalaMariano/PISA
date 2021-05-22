@@ -154,15 +154,15 @@ namespace arg {
         explicit Limit_queries(CLI::App* app)
         {
             app->add_option("--runs", m_runs, "Query runs")->required();
-            app->add_flag("--half", m_half, "Half the queries");
+            app->add_option("--limite", m_limite, "limit the queries")->required();
         }
 
-        [[nodiscard]] auto runs() const -> int { return m_runs; }
-        [[nodiscard]] auto half() const -> bool { return m_half; }
+        [[nodiscard]] auto runs() const -> size_t { return m_runs; }
+        [[nodiscard]] auto limite() const -> size_t { return m_limite; }
 
       private:
-        int m_runs = 1;
-        bool m_half = false;
+        size_t m_runs = 1;
+        size_t m_limite = 100;
     };
     //*
 
