@@ -13,7 +13,6 @@ struct block_posting_list {
     write(std::vector<uint8_t>& out, uint32_t n, DocsIterator docs_begin, FreqsIterator freqs_begin)
     {
         TightVariableByte::encode_single(n, out);
-
         uint64_t block_size = BlockCodec::block_size;
         uint64_t blocks = ceil_div(n, block_size);
         size_t begin_block_maxs = out.size();
@@ -39,8 +38,7 @@ struct block_posting_list {
             }
             *((uint32_t*)&out[begin_block_maxs + 4 * b]) = last_doc;
 
-            BlockCodec::encode(
-                docs_buf.data(), last_doc - block_base - (cur_block_size - 1), cur_block_size, out);
+            BlockCodec::encode(docs_buf.data(), last_doc - block_base - (cur_block_size - 1), cur_block_size, out);
             BlockCodec::encode(freqs_buf.data(), uint32_t(-1), cur_block_size, out);
             if (b != blocks - 1) {
                 *((uint32_t*)&out[begin_block_endpoints + 4 * b]) = out.size() - begin_blocks;
@@ -54,7 +52,6 @@ struct block_posting_list {
     {
         TightVariableByte::encode_single(n, out);
         assert(input_blocks.front().index == 0);  // first block must remain first
-
         uint64_t blocks = input_blocks.size();
         size_t begin_block_maxs = out.size();
         size_t begin_block_endpoints = begin_block_maxs + 4 * blocks;

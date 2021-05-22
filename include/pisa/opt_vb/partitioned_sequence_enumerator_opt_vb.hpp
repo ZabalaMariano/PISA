@@ -43,7 +43,6 @@ namespace pvb {
                 }
 
                 eat_pad(it, alignment);
-
                 m_partition_enum = base_sequence_enumerator(
                     *m_bv, it.position(), ub + 1, n, *m_params, queries
                 );

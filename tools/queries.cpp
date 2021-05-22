@@ -63,15 +63,19 @@ void op_perftest(
     std::string const& index_type,
     std::string const& query_type,
     size_t runs,
+    bool half,//*
     std::uint64_t k,
     bool safe)
 {
     std::vector<double> query_times;
+    int salir = 0;//*
+    int limite = queries.size()/2;//*
     std::size_t num_reruns = 0;
     spdlog::info("Safe: {}", safe);
 
     for (size_t run = 0; run <= runs; ++run) {
         size_t idx = 0;
+        salir = 0;//*
         for (auto const& query: queries) {
             auto usecs = run_with_timer<std::chrono::microseconds>([&]() {
                 uint64_t result = query_func(query, thresholds[idx]);
@@ -85,8 +89,12 @@ void op_perftest(
                 query_times.push_back(usecs.count());
             }
             idx += 1;
+            salir++;//*
+            if(half && salir==limite){std::cout<<"BREAK"<<std::endl;break;}//*
         }
     }
+    std::cout<<"SALIR = "<<salir<<" | LIMITE = "<<limite<<std::endl;//*
+    std::cout<<"TAMAÑO QUERIES = "<<queries.size()<<std::endl;//*
 
     if (false) {
         for (auto t: query_times) {
@@ -124,6 +132,8 @@ void perftest(
     std::string const& query_type,
     uint64_t k,
     const ScorerParams& scorer_params,
+    int runs,//*
+    bool half,//*
     bool extract,
     bool safe)
 {
@@ -281,9 +291,9 @@ void perftest(
             break;
         }
         if (extract) {
-            extract_times(query_fun, queries, thresholds, type, t, 2, std::cout);
+            extract_times(query_fun, queries, thresholds, type, t, runs, std::cout);
         } else {
-            op_perftest(query_fun, queries, thresholds, type, t, 2, k, safe);
+            op_perftest(query_fun, queries, thresholds, type, t, runs, half, k, safe);
         }
     }
 }
@@ -304,7 +314,8 @@ int main(int argc, const char** argv)
         arg::Query<arg::QueryMode::Ranked>,
         arg::Algorithm,
         arg::Scorer,
-        arg::Thresholds>
+        arg::Thresholds,
+        arg::Limit_queries>//*
         app{"Benchmarks queries on a given index."};
     app.add_flag("--quantized", quantized, "Quantized scores");
     app.add_flag("--extract", extract, "Extract individual query times");
@@ -331,6 +342,8 @@ int main(int argc, const char** argv)
         app.algorithm(),
         app.k(),
         app.scorer_params(),
+        app.runs(),//*
+        app.half(),//*
         extract,
         safe);
     /**/
