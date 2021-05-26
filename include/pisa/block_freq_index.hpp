@@ -47,18 +47,19 @@ class block_freq_index {
                             uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
                             uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
                             uint64_t& cantidad_integers_con_interpolative,
-                            uint64_t& cantidad_integers_con_varintg8iu,
+                            uint64_t& cantidad_integers_sin_interpolative,
                             uint64_t& dense_short_freq, uint64_t& dense_medium_freq, uint64_t& dense_large_freq,
                             uint64_t& sparse_short_freq, uint64_t& sparse_medium_freq, uint64_t& sparse_large_freq,
                             uint64_t& dense_short_cost_freq, uint64_t& dense_medium_cost_freq, uint64_t& dense_large_cost_freq,
                             uint64_t& sparse_short_cost_freq, uint64_t& sparse_medium_cost_freq, uint64_t& sparse_large_cost_freq,
                             uint64_t& cantidad_integers_con_interpolative_freq,
-                            uint64_t& cantidad_integers_con_varintg8iu_freq, bool dense_sparse)
+                            uint64_t& cantidad_integers_sin_interpolative_freq, bool dense_sparse)
         {
             if (!n) {
                 throw std::invalid_argument("List must be nonempty");
             }
-            block_posting_list<BlockCodec, Profile>::write(m_lists, n, docs_begin, freqs_begin);
+            block_posting_list<BlockCodec, Profile>::write(m_lists, n, docs_begin, freqs_begin, 
+            cantidad_integers_con_interpolative, cantidad_integers_sin_interpolative);
             m_endpoints.push_back(m_lists.size());
         }
 
@@ -120,7 +121,7 @@ class block_freq_index {
                             uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
                             uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
                             uint64_t& cantidad_integers_con_interpolative,
-                            uint64_t& cantidad_integers_con_varintg8iu,
+                            uint64_t& cantidad_integers_sin_interpolative,
                             uint64_t& dense_short_freq, uint64_t& dense_medium_freq, uint64_t& dense_large_freq,
                             uint64_t& sparse_short_freq, uint64_t& sparse_medium_freq, uint64_t& sparse_large_freq,
                             uint64_t& dense_short_cost_freq, uint64_t& dense_medium_cost_freq, uint64_t& dense_large_cost_freq,
@@ -132,7 +133,8 @@ class block_freq_index {
                 throw std::invalid_argument("List must be nonempty");
             }
             std::vector<std::uint8_t> buf;
-            block_posting_list<BlockCodec, Profile>::write(buf, n, docs_begin, freqs_begin);
+            block_posting_list<BlockCodec, Profile>::write(buf, n, docs_begin, freqs_begin, 
+            cantidad_integers_con_interpolative, cantidad_integers_sin_interpolative);
             m_postings_bytes_written += buf.size();
             m_postings_output.write(reinterpret_cast<char const*>(buf.data()), buf.size());
             m_endpoints.push_back(m_postings_bytes_written);

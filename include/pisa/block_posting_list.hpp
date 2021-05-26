@@ -10,7 +10,8 @@ template <typename BlockCodec, bool Profile = false>
 struct block_posting_list {
     template <typename DocsIterator, typename FreqsIterator>
     static void
-    write(std::vector<uint8_t>& out, uint32_t n, DocsIterator docs_begin, FreqsIterator freqs_begin)
+    write(std::vector<uint8_t>& out, uint32_t n, DocsIterator docs_begin, FreqsIterator freqs_begin, 
+            uint64_t& cantidad_integers_con_interpolative, uint64_t& cantidad_integers_sin_interpolative)
     {
         TightVariableByte::encode_single(n, out);
         uint64_t block_size = BlockCodec::block_size;
@@ -37,6 +38,9 @@ struct block_posting_list {
                 freqs_buf[i] = *freqs_it++ - 1;
             }
             *((uint32_t*)&out[begin_block_maxs + 4 * b]) = last_doc;
+        
+            if(cur_block_size==128){cantidad_integers_sin_interpolative+=128;}
+            else{cantidad_integers_con_interpolative+=cur_block_size;}
 
             BlockCodec::encode(docs_buf.data(), last_doc - block_base - (cur_block_size - 1), cur_block_size, out);
             BlockCodec::encode(freqs_buf.data(), uint32_t(-1), cur_block_size, out);

@@ -75,13 +75,13 @@ void compress_index_streaming(
     std::string const& seq_type)
 {
     uint64_t cantidad_integers_con_interpolative = 0,
-    cantidad_integers_con_varintg8iu = 0,
+    cantidad_integers_sin_interpolative = 0,
     dense_short = 0, dense_medium = 0, dense_large = 0, 
     sparse_short = 0, sparse_medium = 0, sparse_large = 0,
     dense_short_cost = 0, dense_medium_cost = 0, dense_large_cost = 0, 
     sparse_short_cost = 0, sparse_medium_cost = 0, sparse_large_cost = 0,
     cantidad_integers_con_interpolative_freq = 0,
-    cantidad_integers_con_varintg8iu_freq = 0,
+    cantidad_integers_sin_interpolative_freq = 0,
     dense_short_freq = 0, dense_medium_freq = 0, dense_large_freq = 0, 
     sparse_short_freq = 0, sparse_medium_freq = 0, sparse_large_freq = 0,
     dense_short_cost_freq = 0, dense_medium_cost_freq = 0, dense_large_cost_freq = 0, 
@@ -117,13 +117,13 @@ void compress_index_streaming(
                             dense_short_cost, dense_medium_cost, dense_large_cost,
                             sparse_short_cost, sparse_medium_cost, sparse_large_cost,
                             cantidad_integers_con_interpolative,
-                            cantidad_integers_con_varintg8iu,
+                            cantidad_integers_sin_interpolative,
                             dense_short_freq, dense_medium_freq, dense_large_freq,
                             sparse_short_freq, sparse_medium_freq, sparse_large_freq,
                             dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
                             sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
                             cantidad_integers_con_interpolative_freq,
-                            cantidad_integers_con_varintg8iu_freq, dense_sparse);
+                            cantidad_integers_sin_interpolative_freq, dense_sparse);
                 term_id += 1;
                 quantized_scores.clear();
                 progress.update(1);
@@ -139,13 +139,13 @@ void compress_index_streaming(
                             dense_short_cost, dense_medium_cost, dense_large_cost,
                             sparse_short_cost, sparse_medium_cost, sparse_large_cost,
                             cantidad_integers_con_interpolative,
-                            cantidad_integers_con_varintg8iu,
+                            cantidad_integers_sin_interpolative,
                             dense_short_freq, dense_medium_freq, dense_large_freq,
                             sparse_short_freq, sparse_medium_freq, sparse_large_freq,
                             dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
                             sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
                             cantidad_integers_con_interpolative_freq,
-                            cantidad_integers_con_varintg8iu_freq, dense_sparse);
+                            cantidad_integers_sin_interpolative_freq, dense_sparse);
                 progress.update(1);
                 postings += size;
                 term_id += 1;
@@ -160,6 +160,11 @@ void compress_index_streaming(
     if (check && not quantized_scorer) {
         verify_collection<binary_freq_collection, CollectionType>(input, output_filename.c_str());
     }
+
+    std::cout << "\ncantidad_integers_con_interpolative docids: " << cantidad_integers_con_interpolative << std::endl;
+    std::cout << "cantidad_integers_sin_interpolative docids: " << cantidad_integers_sin_interpolative << std::endl;
+    std::cout << "total_integer docids: " << cantidad_integers_con_interpolative+cantidad_integers_sin_interpolative << std::endl;
+    std::cout << "cantidad_integers_con_interpolative * 100 / total_integers_sparse docids: " << (cantidad_integers_con_interpolative*100.0)/(cantidad_integers_con_interpolative+cantidad_integers_sin_interpolative) << std::endl;
 }
 
 // TODO(michal): Group parameters under a common `optional` so that, say, it is impossible to get
@@ -238,6 +243,7 @@ void compress_index(
         }
 
         size_t term_id = 0;
+        std::vector<uint64_t> posting_list_sizes;
         for (auto const& plist: input) {
             size_t size = plist.docs.size();
             if (quantized) {
@@ -289,7 +295,20 @@ void compress_index(
             progress.update(1);
             postings += size;
             term_id += 1;
+            posting_list_sizes.push_back(size);
         }
+        std::cout << "Nro de terminos (posting list): " << term_id << std::endl;
+        std::cout << "Suma todas las posting list (total postings): " << postings << std::endl;
+        double promedio = postings/term_id;
+        std::cout << "Promedio largo posting list: " << promedio << std::endl;
+        double desvio = 0;
+        for (int i=0; i<posting_list_sizes.size(); i++){
+            desvio += (posting_list_sizes[i] - promedio) * (posting_list_sizes[i] - promedio);
+        }
+        desvio /= term_id;
+        std::cout << "Varianza posting list: " << desvio << std::endl;
+        desvio = sqrt(desvio);
+        std::cout << "Desvio estandar posting list: " << desvio << std::endl;
     }
 
     CollectionType coll;
