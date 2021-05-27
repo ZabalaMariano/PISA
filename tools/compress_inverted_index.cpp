@@ -33,5 +33,6 @@ int main(int argc, char** argv)
         args.scorer_params(),
         args.quantize(),
         args.check(),
-        args.dense_sparse());
+        args.dense_sparse(),
+        args.decompress());
 }

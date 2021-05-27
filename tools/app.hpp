@@ -332,12 +332,14 @@ namespace arg {
             app->add_option("-o,--output", m_output, "Output inverted index")->required();
             app->add_flag("--check", m_check, "Check the correctness of the index");
             app->add_option("-d,--densesparse", m_dense_sparse, "Show dense sparse data")->required();
+            app->add_option("--decompress_only", m_decompress, "Decompress only")->required();
         }
 
         [[nodiscard]] auto input_basename() const -> std::string { return m_input_basename; }
         [[nodiscard]] auto output() const -> std::string { return m_output; }
         [[nodiscard]] auto check() const -> bool { return m_check; }
         [[nodiscard]] auto dense_sparse() const -> bool { return m_dense_sparse; }
+        [[nodiscard]] auto decompress() const -> bool { return m_decompress; }
 
         /// Transform paths for `shard`.
         void apply_shard(Shard_Id shard)
@@ -351,6 +353,7 @@ namespace arg {
         std::string m_output{};
         bool m_check = false;
         bool m_dense_sparse{};
+        bool m_decompress{};
     };
 
     struct CreateWandData {
