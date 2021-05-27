@@ -89,7 +89,7 @@ void op_perftest(
             }
             idx += 1;
             salir++;//*
-            if(salir%100==0){spdlog::info("query: ",salir);}
+            if(salir%100==0){spdlog::info("query: {}",salir);}
             if(salir==limite){std::cout<<"BREAK"<<std::endl;break;}//*
         }
     }

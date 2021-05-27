@@ -17,6 +17,10 @@ void verify_collection(InputCollection const& input, const char* filename)
     size_t size = 0;
     spdlog::info("Checking the written data, just to be extra safe...");
     size_t s = 0;
+    uint64_t input_size = input.size();
+    spdlog::info("PLs: {}", input_size);
+    int x = 1;
+    uint64_t porcentaje = 5*input_size/100;
     double tick = get_time_usecs();
     for (auto seq: input) {
         size = seq.docs.size();
@@ -42,6 +46,11 @@ void verify_collection(InputCollection const& input, const char* filename)
 
                 exit(1);
             }
+        }
+        if(s==porcentaje){
+            std::cout<<"Decompressed "<< 5*x <<"% in "<< ((get_time_usecs() - tick) / 1000000) <<" seconds"<<std::endl;
+            x++;
+            porcentaje =(5*x*input_size)/100;
         }
         s += 1;
     }
