@@ -17,6 +17,8 @@
 #include "./util_opt_vb.hpp"
 #include "./typedefs.hpp"
 
+#include <fstream>
+
 namespace pvb
 {
 
@@ -267,7 +269,7 @@ namespace pvb
         template <typename Iterator>
         static void write(pisa::bit_vector_builder &bvb, Iterator begin,
                           uint64_t base, uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const &params)
+                          global_parameters_opt_vb const &params, size_t size_pl)
         {
             (void)params;
             std::vector<uint32_t> gaps;
@@ -398,7 +400,7 @@ namespace pvb
         template <typename Iterator>
         static void write(pisa::bit_vector_builder &bvb, Iterator begin,
                           uint64_t base, uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const &params)
+                          global_parameters_opt_vb const &params, size_t size_pl)
         {
             (void)params;
             std::vector<uint32_t> gaps;
@@ -488,7 +490,7 @@ namespace pvb
         template <typename Iterator>
         static void write(pisa::bit_vector_builder &bvb, Iterator begin,
                           uint64_t base, uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const &params)
+                          global_parameters_opt_vb const &params, size_t size_pl)
         {
             (void)params;
             std::vector<uint32_t> gaps;
@@ -501,7 +503,8 @@ namespace pvb
                 last_doc = doc;
             }
             std::vector<uint8_t> out;
-            encode(gaps.data(), universe, n, out);
+            universe = last_doc+1;
+            encode(gaps.data(), universe, n, out, size_pl);
             for (uint8_t v : out)
             {
                 bvb.append_bits(v, 8);
@@ -509,20 +512,28 @@ namespace pvb
         }
 
         static void encode(uint32_t const *in, uint32_t sum_of_values, size_t n,
-                           std::vector<uint8_t> &out)
+                           std::vector<uint8_t> &out, size_t size_pl)
         {
-            (void)sum_of_values;
+            //(void)sum_of_values;
             size_t size = n;
             uint32_t *src = const_cast<uint32_t *>(in);
+            
+            if (n < block_size) {
+                interpolative_block::encode(src, sum_of_values, n, out);
+                return;
+            }
             std::vector<uint8_t> buf(2 * size * sizeof(uint32_t));
             size_t out_len = vbyte_encode(src, size, buf.data());
             out.insert(out.end(), buf.data(), buf.data() + out_len);
         }
 
         static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint32_t&, uint32_t, bool, bool)
+                                    uint32_t&, uint32_t size_partition, bool, bool)
         {
-            (void)sum_of_values;
+            //(void)sum_of_values;
+            if (PISA_UNLIKELY(size_partition < block_size)) {
+                return interpolative_block::decode(in, out, sum_of_values, n);
+            }
             auto read = masked_vbyte_decode(in, out, n);
             return in + read;
         }
@@ -569,7 +580,7 @@ namespace pvb
         template <typename Iterator>
         static void write(pisa::bit_vector_builder &bvb, Iterator begin,
                           uint64_t base, uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const &params)
+                          global_parameters_opt_vb const &params, size_t size_pl)
         {
             (void)params;
             std::vector<uint32_t> gaps;
@@ -601,13 +612,73 @@ namespace pvb
         }
 
         static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
-                                    uint32_t&, uint32_t, bool, bool)
+                                    uint32_t&, uint32_t size_pl, bool, bool)
         {
             (void)sum_of_values;
             VarIntGB<false> varintgb_codec;
             //assert(n <= block_size);
             auto read = varintgb_codec.decodeArray(in, n, out);
             return read + in;
+        }
+    };
+
+    struct interpolative_opt_vb//*
+    {
+        static const uint64_t block_size = constants::block_size;
+        static const int type = 2;
+
+        static inline uint64_t posting_cost(posting_type x, uint64_t base)
+        {
+            return 0;
+        }
+
+        template <typename Iterator>
+        static DS2I_FLATTEN_FUNC uint64_t bitsize(Iterator begin,
+                                                  global_parameters_opt_vb const &params,
+                                                  uint64_t universe, uint64_t n,
+                                                  uint64_t base = 0)
+        {
+            return 0;
+        }
+
+        template <typename Iterator>
+        static void write(pisa::bit_vector_builder &bvb, Iterator begin,
+                          uint64_t base, uint64_t universe, uint64_t n,
+                          global_parameters_opt_vb const &params, size_t size_pl)
+        {
+            (void)params;
+            std::vector<uint32_t> gaps;
+            gaps.reserve(n);
+            uint32_t last_doc(-1);
+            for (size_t i = 0; i < n; ++i)
+            {
+                uint32_t doc = *(begin + i) - base;
+                gaps.push_back(doc - last_doc); // delta gap
+                last_doc = doc;
+            }
+            std::vector<uint8_t> out;
+            universe = last_doc+1;
+            encode(gaps.data(), universe, n, out, size_pl);
+            for (uint8_t v : out)
+            {
+                bvb.append_bits(v, 8);
+            }
+        }
+
+        static void encode(uint32_t const *in, uint32_t sum_of_values, size_t n,
+                           std::vector<uint8_t> &out, size_t size_pl)
+        {
+            //(void)sum_of_values;
+            size_t size = n;
+            uint32_t *src = const_cast<uint32_t *>(in);
+            interpolative_block::encode(src, sum_of_values, n, out);
+            return;
+        }
+
+        static uint8_t const *decode(uint8_t const *in, uint32_t *out, uint32_t sum_of_values, size_t n, 
+                                    uint32_t&, uint32_t size_partition, bool, bool)
+        {
+            return interpolative_block::decode(in, out, sum_of_values, n);
         }
     };
 } // namespace pvb

@@ -6,6 +6,8 @@
 #include "memory_source.hpp"
 #include "util/util.hpp"
 
+#include <fstream>
+
 namespace pisa {
 
 template <typename InputCollection, typename Collection>
@@ -21,9 +23,11 @@ void verify_collection(InputCollection const& input, const char* filename)
     spdlog::info("PLs: {}", input_size);
     int x = 1;
     uint64_t porcentaje = 5*input_size/100;
+
     double tick = get_time_usecs();
     for (auto seq: input) {
         size = seq.docs.size();
+
         auto e = coll[s];
         if (e.size() != size) {
             spdlog::error("sequence {} has wrong length! ({} != {})", s, e.size(), size);
@@ -52,6 +56,7 @@ void verify_collection(InputCollection const& input, const char* filename)
             x++;
             porcentaje =(5*x*input_size)/100;
         }
+
         s += 1;
     }
     double elapsed_secs = (get_time_usecs() - tick) / 1000000;

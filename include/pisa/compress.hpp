@@ -213,13 +213,13 @@ void compress_index(
         }
 
         uint64_t cantidad_integers_con_interpolative = 0,
-        cantidad_integers_con_varintg8iu = 0,
+        cantidad_integers_sin_interpolative = 0,
         dense_short = 0, dense_medium = 0, dense_large = 0, 
         sparse_short = 0, sparse_medium = 0, sparse_large = 0,
         dense_short_cost = 0, dense_medium_cost = 0, dense_large_cost = 0, 
         sparse_short_cost = 0, sparse_medium_cost = 0, sparse_large_cost = 0,
         cantidad_integers_con_interpolative_freq = 0,
-        cantidad_integers_con_varintg8iu_freq = 0,
+        cantidad_integers_sin_interpolative_freq = 0,
         dense_short_freq = 0, dense_medium_freq = 0, dense_large_freq = 0, 
         sparse_short_freq = 0, sparse_medium_freq = 0, sparse_large_freq = 0,
         dense_short_cost_freq = 0, dense_medium_cost_freq = 0, dense_large_cost_freq = 0, 
@@ -272,13 +272,13 @@ void compress_index(
                                 dense_short_cost, dense_medium_cost, dense_large_cost,
                                 sparse_short_cost, sparse_medium_cost, sparse_large_cost,
                                 cantidad_integers_con_interpolative,
-                                cantidad_integers_con_varintg8iu,
+                                cantidad_integers_sin_interpolative,
                                 dense_short_freq, dense_medium_freq, dense_large_freq,
                                 sparse_short_freq, sparse_medium_freq, sparse_large_freq,
                                 dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
                                 sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
                                 cantidad_integers_con_interpolative_freq,
-                                cantidad_integers_con_varintg8iu_freq,dense_sparse);
+                                cantidad_integers_sin_interpolative_freq,dense_sparse);
                 } else {
                     uint64_t freqs_sum =
                         std::accumulate(plist.freqs.begin(), plist.freqs.begin() + size, uint64_t(0));
@@ -288,13 +288,13 @@ void compress_index(
                                 dense_short_cost, dense_medium_cost, dense_large_cost,
                                 sparse_short_cost, sparse_medium_cost, sparse_large_cost,
                                 cantidad_integers_con_interpolative,
-                                cantidad_integers_con_varintg8iu,
+                                cantidad_integers_sin_interpolative,
                                 dense_short_freq, dense_medium_freq, dense_large_freq,
                                 sparse_short_freq, sparse_medium_freq, sparse_large_freq,
                                 dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
                                 sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
                                 cantidad_integers_con_interpolative_freq,
-                                cantidad_integers_con_varintg8iu_freq,dense_sparse);
+                                cantidad_integers_sin_interpolative_freq,dense_sparse);
                 }
 
                 progress.update(1);
@@ -372,9 +372,10 @@ void compress_index(
         std::cout << "sparse_large_cost docids: " << sparse_large_cost*1.0/sparse_large*1.0 << std::endl;
 
         std::cout << "\ncantidad_integers_con_interpolative docids: " << cantidad_integers_con_interpolative << std::endl;
-        std::cout << "cantidad_integers_con_varintg8iu docids: " << cantidad_integers_con_varintg8iu << std::endl;
+        std::cout << "cantidad_integers_sin_interpolative docids: " << cantidad_integers_sin_interpolative << std::endl;
         std::cout << "total_integers_sparse docids: " << sparse_short+sparse_medium+sparse_large << std::endl;
-        std::cout << "cantidad_integers_con_interpolative * 100 / total_integers_sparse docids: " << (cantidad_integers_con_interpolative*100.0)/(sparse_short+sparse_medium+sparse_large) << std::endl;
+        std::cout << "total_integers_dense docids: " << dense_short+dense_medium+dense_large << std::endl;
+        std::cout << "cantidad_integers_con_interpolative * 100 / total_integers docids: " << (cantidad_integers_con_interpolative*100.0)/(cantidad_integers_sin_interpolative) << std::endl;
 
         std::cout << "\nFRECUENCIAS: " << std::endl;
         std::cout << "dense_short freq: " << dense_short_freq << std::endl;
@@ -409,9 +410,10 @@ void compress_index(
         std::cout << "sparse_large_cost freq: " << sparse_large_cost_freq*1.0/sparse_large_freq*1.0 << std::endl;
 
         std::cout << "\ncantidad_integers_con_interpolative freq: " << cantidad_integers_con_interpolative_freq << std::endl;
-        std::cout << "cantidad_integers_con_varintg8iu freq: " << cantidad_integers_con_varintg8iu_freq << std::endl;
+        std::cout << "cantidad_integers_sin_interpolative freq: " << cantidad_integers_sin_interpolative_freq << std::endl;
         std::cout << "total_integers_sparse freq: " << sparse_short_freq+sparse_medium_freq+sparse_large_freq << std::endl;
-        std::cout << "cantidad_integers_con_interpolative * 100 / total_integers_sparse freq: " << (cantidad_integers_con_interpolative_freq*100.0)/(sparse_short_freq+sparse_medium_freq+sparse_large_freq) << std::endl;
+        std::cout << "total_integers_dense freq: " << dense_short_freq+dense_medium_freq+dense_large_freq << std::endl;
+        std::cout << "cantidad_integers_con_interpolative * 100 / total_integers freq: " << (cantidad_integers_con_interpolative_freq*100.0)/(cantidad_integers_sin_interpolative_freq) << std::endl;
         }
     }
 }

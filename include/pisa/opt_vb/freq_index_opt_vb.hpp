@@ -50,13 +50,13 @@ struct BitVectorIndexTag;
                                   uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
                                   uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
                                   uint64_t& cantidad_integers_con_interpolative,
-                                  uint64_t& cantidad_integers_con_varintg8iu,
+                                  uint64_t& cantidad_integers_sin_interpolative,
                                   uint64_t& dense_short_freq, uint64_t& dense_medium_freq, uint64_t& dense_large_freq,
                                   uint64_t& sparse_short_freq, uint64_t& sparse_medium_freq, uint64_t& sparse_large_freq,
                                   uint64_t& dense_short_cost_freq, uint64_t& dense_medium_cost_freq, uint64_t& dense_large_cost_freq,
                                   uint64_t& sparse_short_cost_freq, uint64_t& sparse_medium_cost_freq, uint64_t& sparse_large_cost_freq,
                                   uint64_t& cantidad_integers_con_interpolative_freq,
-                                  uint64_t& cantidad_integers_con_varintg8iu_freq, bool dense_sparse)
+                                  uint64_t& cantidad_integers_sin_interpolative_freq, bool dense_sparse)
             {
                 if (!n) throw std::invalid_argument("List must be nonempty");
 
@@ -74,8 +74,8 @@ struct BitVectorIndexTag;
                             dense_short_cost, dense_medium_cost, dense_large_cost,
                             sparse_short_cost, sparse_medium_cost, sparse_large_cost,
                             cantidad_integers_con_interpolative,
-                            cantidad_integers_con_varintg8iu, dense_sparse);
-                        //pvb::push_pad(docs_bits, pvb::alignment);
+                            cantidad_integers_sin_interpolative, dense_sparse);
+                        pvb::push_pad(docs_bits, pvb::alignment);
                         assert(docs_bits.size() % pvb::alignment == 0);
                         m_docs_sequences.append(docs_bits);
                     },
@@ -88,8 +88,8 @@ struct BitVectorIndexTag;
                             dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
                             sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
                             cantidad_integers_con_interpolative_freq,
-                            cantidad_integers_con_varintg8iu_freq, dense_sparse);
-                        //pvb::push_pad(freqs_bits, pvb::alignment);
+                            cantidad_integers_sin_interpolative_freq, dense_sparse);
+                        pvb::push_pad(freqs_bits, pvb::alignment);
                         assert(freqs_bits.size() % pvb::alignment == 0);
                         m_freqs_sequences.append(freqs_bits);
                     });

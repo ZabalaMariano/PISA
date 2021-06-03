@@ -50,7 +50,7 @@ struct block_posting_list {
             block_base = last_doc + 1;
         }
     }
-
+    
     template <typename BlockDataRange>
     static void write_blocks(std::vector<uint8_t>& out, uint32_t n, BlockDataRange const& input_blocks)
     {
@@ -266,6 +266,7 @@ struct block_posting_list {
                 ((block + 1) * block_size <= size()) ? block_size : (size() % block_size);
             uint32_t cur_base = (block != 0U ? block_max(block - 1) : uint32_t(-1)) + 1;
             m_cur_block_max = block_max(block);
+
             m_freqs_block_data = BlockCodec::decode(
                 block_data,
                 m_docs_buf.data(),

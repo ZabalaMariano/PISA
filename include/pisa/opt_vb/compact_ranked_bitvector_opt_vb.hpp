@@ -76,7 +76,7 @@ namespace pvb {
         static void write(pisa::bit_vector_builder& bvb,
                           Iterator begin,
                           uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const& params)
+                          global_parameters_opt_vb const& params, size_t size_pl)
         {
             using pisa::ceil_div;
 
@@ -138,7 +138,7 @@ namespace pvb {
                           Iterator begin,
                           uint64_t base,
                           uint64_t universe, uint64_t n,
-                          global_parameters_opt_vb const& params)
+                          global_parameters_opt_vb const& params, size_t size_pl)
         {
             (void) universe;
             std::vector<uint32_t> gaps;
@@ -147,7 +147,7 @@ namespace pvb {
                 uint32_t doc = *(begin + i) - base;
                 gaps.push_back(doc);
             }
-            write(bvb, gaps.begin(), gaps.back() + 1, n, params);
+            write(bvb, gaps.begin(), gaps.back() + 1, n, params, size_pl);
         }
 
         class enumerator {

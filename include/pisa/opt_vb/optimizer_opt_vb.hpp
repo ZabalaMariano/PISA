@@ -101,43 +101,48 @@ namespace pvb {
                     encode_encoder1();
                 }
             };
+        
+            if(n<128){
+                curr_block.type = 3;//*//encoder1::type;
+                curr_block.begin = end;
+                partition.push_back(curr_block);
+            }else{
+                for (int64_t last_gain = 0; it != end; ++it,
+                    last = curr, last_gain = curr_gain)
+                {
+                    curr = *it;
+                    curr_gain += encoder1::posting_cost(curr, last)
+                            - encoder2::posting_cost(curr, last);
 
-            for (int64_t last_gain = 0; it != end; ++it,
-                 last = curr, last_gain = curr_gain)
-            {
-                curr = *it;
-                curr_gain += encoder1::posting_cost(curr, last)
-                           - encoder2::posting_cost(curr, last);
+                    if (curr_gain >= last_gain) { // gain is not decreasing
 
-                if (curr_gain >= last_gain) { // gain is not decreasing
+                        if (curr_gain > best_bv_gain) {
+                            best_bv_gain = curr_gain;
+                            curr_bv_end = it + 1;
+                        }
 
-                    if (curr_gain > best_bv_gain) {
-                        best_bv_gain = curr_gain;
-                        curr_bv_end = it + 1;
-                    }
+                        assert(best_vb_gain <= curr_gain);
+                        if (best_vb_gain - curr_gain < -2 * F and best_vb_gain < -T) {
+                            encode_encoder1();
+                        }
 
-                    assert(best_vb_gain <= curr_gain);
-                    if (best_vb_gain - curr_gain < -2 * F and best_vb_gain < -T) {
-                        encode_encoder1();
-                    }
+                    } else { // gain is decreasing
 
-                } else { // gain is decreasing
+                        if (curr_gain <= best_vb_gain) {
+                            best_vb_gain = curr_gain;
+                            curr_vb_end = it + 1;
+                        }
 
-                    if (curr_gain <= best_vb_gain) {
-                        best_vb_gain = curr_gain;
-                        curr_vb_end = it + 1;
-                    }
-
-                    assert(best_bv_gain >= curr_gain);
-                    if (best_bv_gain - curr_gain > 2 * F and best_bv_gain > T) {
-                        encode_encoder2();
+                        assert(best_bv_gain >= curr_gain);
+                        if (best_bv_gain - curr_gain > 2 * F and best_bv_gain > T) {
+                            encode_encoder2();
+                        }
                     }
                 }
+
+                assert(it == end);
+                close();
             }
-
-            assert(it == end);
-            close();
-
             return partition;
         }
     };

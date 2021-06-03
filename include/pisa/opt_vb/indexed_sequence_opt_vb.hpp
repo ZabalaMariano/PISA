@@ -27,10 +27,11 @@ struct indexed_sequence_opt_vb {
         third = 0,
         ranked_bitvector = 1,
         all_ones = 2,
-        index_types = 3
+        inter = 3,//*
+        index_types = 4
     };
 
-    static const uint64_t type_bits = 1;  // all_ones is implicit
+    static const uint64_t type_bits = 2;//*1;  // all_ones is implicit
 
     static DS2I_FLATTEN_FUNC uint64_t bitsize(global_parameters_opt_vb const& params,
                                               uint64_t third_cost,
@@ -98,14 +99,14 @@ struct indexed_sequence_opt_vb {
                                 ((uint64_t(1) << type_bits) - 1));
 
             uint64_t pad = 0;
-            if ((m_type == third and is_byte_aligned<Encoder>::value) or
-                (m_type == ranked_bitvector and is_byte_aligned<Encoder2>::value)) {
+            //*if ((m_type == third and is_byte_aligned<Encoder>::value) or
+            //    (m_type == ranked_bitvector and is_byte_aligned<Encoder2>::value)) {
                 uint64_t mod = (offset + type_bits) % alignment;
                 if (mod) {
                     pad = alignment - mod;
                 }
                 assert((offset + type_bits + pad) % alignment == 0);
-            }
+            //}
 
             // params.blocks[m_type] += n;
 
@@ -122,6 +123,10 @@ struct indexed_sequence_opt_vb {
                     m_rb_enumerator = typename Encoder2::enumerator(
                         bv, offset + type_bits + pad, universe, n, params, queries);
                     break;
+                case 3://*
+                    m_int_enumerator = typename pvb::block_sequence_opt_vb<pvb::interpolative_opt_vb>::enumerator(
+                        bv, offset + type_bits + pad, universe, n, params, queries);
+                    break;
                 default:
                     throw std::invalid_argument("Unsupported type");
             }
@@ -134,6 +139,8 @@ struct indexed_sequence_opt_vb {
                 return m_th_enumerator.METHOD ACTUALS;           \
             case ranked_bitvector:                               \
                 return m_rb_enumerator.METHOD ACTUALS;           \
+            case inter:                                          \
+                return m_int_enumerator.METHOD ACTUALS;          \
             default:                                             \
                 assert(false);                                   \
                 __builtin_unreachable();                         \
@@ -143,11 +150,10 @@ struct indexed_sequence_opt_vb {
 
         // ENUMERATOR_METHOD(void, decode, (uint32_t* out), (out));
         ENUMERATOR_METHOD(value_type, move, (uint64_t position), (position));
-        ENUMERATOR_METHOD(value_type, next_geq, (uint64_t lower_bound),
-                          (lower_bound));
+        ENUMERATOR_METHOD(value_type, next_geq, (uint64_t lower_bound),(lower_bound));
         ENUMERATOR_METHOD(value_type, next, (), ());
         ENUMERATOR_METHOD(uint64_t, size, () const, ());
-        ENUMERATOR_METHOD(uint64_t, prev_value, () const, ());
+        //ENUMERATOR_METHOD(uint64_t, prev_value, () const, ());
 
 #undef ENUMERATOR_METHOD
 #undef ENUMERATOR_VOID_METHOD
@@ -157,6 +163,7 @@ struct indexed_sequence_opt_vb {
         union {
             typename Encoder::enumerator m_th_enumerator;
             typename Encoder2::enumerator m_rb_enumerator;
+            typename pvb::block_sequence_opt_vb<pvb::interpolative_opt_vb>::enumerator m_int_enumerator;
         };
     };
 };
