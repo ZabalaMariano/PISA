@@ -10,6 +10,7 @@
 #include "memory_source.hpp"
 
 #include "global_parameters.hpp"
+#include "../opt_vb/dense_sparse_stats.hpp"
 
 namespace pisa {
 
@@ -44,19 +45,7 @@ struct BitVectorIndexTag;
 
             template<typename DocsIterator, typename FreqsIterator>
             void add_posting_list(uint64_t n, DocsIterator docs_begin,
-                                  FreqsIterator freqs_begin, uint64_t occurrences,
-                                  uint64_t& dense_short, uint64_t& dense_medium, uint64_t& dense_large,
-                                  uint64_t& sparse_short, uint64_t& sparse_medium, uint64_t& sparse_large,
-                                  uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
-                                  uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
-                                  uint64_t& cantidad_integers_con_interpolative,
-                                  uint64_t& cantidad_integers_sin_interpolative,
-                                  uint64_t& dense_short_freq, uint64_t& dense_medium_freq, uint64_t& dense_large_freq,
-                                  uint64_t& sparse_short_freq, uint64_t& sparse_medium_freq, uint64_t& sparse_large_freq,
-                                  uint64_t& dense_short_cost_freq, uint64_t& dense_medium_cost_freq, uint64_t& dense_large_cost_freq,
-                                  uint64_t& sparse_short_cost_freq, uint64_t& sparse_medium_cost_freq, uint64_t& sparse_large_cost_freq,
-                                  uint64_t& cantidad_integers_con_interpolative_freq,
-                                  uint64_t& cantidad_integers_sin_interpolative_freq, bool dense_sparse)
+                                  FreqsIterator freqs_begin, uint64_t occurrences, pvb::stats& doc_stats, pvb::stats& freq_stats)
             {
                 if (!n) throw std::invalid_argument("List must be nonempty");
 
@@ -68,13 +57,7 @@ struct BitVectorIndexTag;
                             docs_bits.append_bits(n, ceil_log2(occurrences + 1));
                         }
                         DocsSequence::write(
-                            docs_bits, docs_begin, m_num_docs, n, m_params,
-                            dense_short, dense_medium, dense_large,
-                            sparse_short, sparse_medium, sparse_large,
-                            dense_short_cost, dense_medium_cost, dense_large_cost,
-                            sparse_short_cost, sparse_medium_cost, sparse_large_cost,
-                            cantidad_integers_con_interpolative,
-                            cantidad_integers_sin_interpolative, dense_sparse);
+                            docs_bits, docs_begin, m_num_docs, n, m_params, doc_stats);
                         pvb::push_pad(docs_bits, pvb::alignment);
                         assert(docs_bits.size() % pvb::alignment == 0);
                         m_docs_sequences.append(docs_bits);
@@ -82,41 +65,11 @@ struct BitVectorIndexTag;
                     [&] {
                         bit_vector_builder freqs_bits;
                         FreqsSequence::write(
-                            freqs_bits, freqs_begin, occurrences + 1, n, m_params,
-                            dense_short_freq, dense_medium_freq, dense_large_freq,
-                            sparse_short_freq, sparse_medium_freq, sparse_large_freq,
-                            dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
-                            sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
-                            cantidad_integers_con_interpolative_freq,
-                            cantidad_integers_sin_interpolative_freq, dense_sparse);
+                            freqs_bits, freqs_begin, occurrences + 1, n, m_params, freq_stats);
                         pvb::push_pad(freqs_bits, pvb::alignment);
                         assert(freqs_bits.size() % pvb::alignment == 0);
                         m_freqs_sequences.append(freqs_bits);
                     });
-
-                /*pvb::task_region(*conf.executor, [&](pvb::task_region_handle& trh) {
-                    trh.run([&] {
-                        bit_vector_builder docs_bits;
-                        write_gamma_nonzero(docs_bits, occurrences);
-                        if (occurrences > 1) {
-                            docs_bits.append_bits(n, ceil_log2(occurrences + 1));
-                        }
-                        DocsSequence::write(docs_bits, docs_begin,
-                                            m_num_docs, n,
-                                            m_params, conf);
-                        pvb::push_pad(docs_bits, pvb::alignment);
-                        assert(docs_bits.size() % pvb::alignment == 0);
-                        m_docs_sequences.append(docs_bits);
-                    });
-
-                    bit_vector_builder freqs_bits;
-                    FreqsSequence::write(freqs_bits, freqs_begin,
-                                         occurrences + 1, n,
-                                         m_params, conf);
-                    pvb::push_pad(freqs_bits, pvb::alignment);
-                    assert(freqs_bits.size() % pvb::alignment == 0);
-                    m_freqs_sequences.append(freqs_bits);
-                });*/
             }
 
             void build(freq_index_opt_vb& sq)

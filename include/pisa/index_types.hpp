@@ -52,6 +52,7 @@ using block_simple8b_index = block_freq_index<pisa::simple8b_block>;
 using block_simple16_index = block_freq_index<pisa::simple16_block>;
 using block_simdbp_index = block_freq_index<pisa::simdbp_block>;
 
+//opt_vb
 using masked_bitvector_index =
     freq_index_opt_vb<
         pvb::partitioned_vb_sequence_opt_vb<
@@ -77,6 +78,7 @@ using masked_bitvector_index =
             >
         >
     >;
+
 
 using masked_vgb_index =
     freq_index_opt_vb<

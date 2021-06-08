@@ -12,6 +12,7 @@
 
 #include "configuration.hpp"//#include "opt_vb/configuration_opt_vb.hpp"
 #include "opt_vb/global_parameters_opt_vb.hpp"
+#include "./opt_vb/dense_sparse_stats.hpp"
 
 namespace pisa {
 
@@ -41,25 +42,12 @@ class block_freq_index {
 
         template <typename DocsIterator, typename FreqsIterator>
         void add_posting_list(uint64_t n, DocsIterator docs_begin,
-                            FreqsIterator freqs_begin, uint64_t occurrences,
-                            uint64_t& dense_short, uint64_t& dense_medium, uint64_t& dense_large,
-                            uint64_t& sparse_short, uint64_t& sparse_medium, uint64_t& sparse_large,
-                            uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
-                            uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
-                            uint64_t& cantidad_integers_con_interpolative,
-                            uint64_t& cantidad_integers_sin_interpolative,
-                            uint64_t& dense_short_freq, uint64_t& dense_medium_freq, uint64_t& dense_large_freq,
-                            uint64_t& sparse_short_freq, uint64_t& sparse_medium_freq, uint64_t& sparse_large_freq,
-                            uint64_t& dense_short_cost_freq, uint64_t& dense_medium_cost_freq, uint64_t& dense_large_cost_freq,
-                            uint64_t& sparse_short_cost_freq, uint64_t& sparse_medium_cost_freq, uint64_t& sparse_large_cost_freq,
-                            uint64_t& cantidad_integers_con_interpolative_freq,
-                            uint64_t& cantidad_integers_sin_interpolative_freq, bool dense_sparse)
+                            FreqsIterator freqs_begin, uint64_t occurrences, pvb::stats& doc_stats, pvb::stats& freq_stats)
         {
             if (!n) {
                 throw std::invalid_argument("List must be nonempty");
             }
-            block_posting_list<BlockCodec, Profile>::write(m_lists, n, docs_begin, freqs_begin, 
-            cantidad_integers_con_interpolative, cantidad_integers_sin_interpolative);
+            block_posting_list<BlockCodec, Profile>::write(m_lists, n, docs_begin, freqs_begin, doc_stats);
             m_endpoints.push_back(m_lists.size());
         }
 
@@ -115,26 +103,13 @@ class block_freq_index {
 
         template <typename DocsIterator, typename FreqsIterator>
         void add_posting_list(uint64_t n, DocsIterator docs_begin,
-                            FreqsIterator freqs_begin, uint64_t occurrences,
-                            uint64_t& dense_short, uint64_t& dense_medium, uint64_t& dense_large,
-                            uint64_t& sparse_short, uint64_t& sparse_medium, uint64_t& sparse_large,
-                            uint64_t& dense_short_cost, uint64_t& dense_medium_cost, uint64_t& dense_large_cost,
-                            uint64_t& sparse_short_cost, uint64_t& sparse_medium_cost, uint64_t& sparse_large_cost,
-                            uint64_t& cantidad_integers_con_interpolative,
-                            uint64_t& cantidad_integers_sin_interpolative,
-                            uint64_t& dense_short_freq, uint64_t& dense_medium_freq, uint64_t& dense_large_freq,
-                            uint64_t& sparse_short_freq, uint64_t& sparse_medium_freq, uint64_t& sparse_large_freq,
-                            uint64_t& dense_short_cost_freq, uint64_t& dense_medium_cost_freq, uint64_t& dense_large_cost_freq,
-                            uint64_t& sparse_short_cost_freq, uint64_t& sparse_medium_cost_freq, uint64_t& sparse_large_cost_freq,
-                            uint64_t& cantidad_integers_con_interpolative_freq,
-                            uint64_t& cantidad_integers_con_varintg8iu_freq, bool dense_sparse)
+                            FreqsIterator freqs_begin, uint64_t occurrences, pvb::stats& doc_stats, pvb::stats& freq_stats)
         {
             if (!n) {
                 throw std::invalid_argument("List must be nonempty");
             }
             std::vector<std::uint8_t> buf;
-            block_posting_list<BlockCodec, Profile>::write(buf, n, docs_begin, freqs_begin, 
-            cantidad_integers_con_interpolative, cantidad_integers_sin_interpolative);
+            block_posting_list<BlockCodec, Profile>::write(buf, n, docs_begin, freqs_begin, doc_stats);
             m_postings_bytes_written += buf.size();
             m_postings_output.write(reinterpret_cast<char const*>(buf.data()), buf.size());
             m_endpoints.push_back(m_postings_bytes_written);

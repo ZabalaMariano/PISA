@@ -34,5 +34,6 @@ int main(int argc, char** argv)
         args.quantize(),
         args.check(),
         args.dense_sparse(),
-        args.decompress());
+        args.decompress(),
+        args.interpolative());
 }

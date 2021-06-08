@@ -23,6 +23,8 @@
 #include "wand_data.hpp"
 #include "wand_data_raw.hpp"
 
+#include "./opt_vb/dense_sparse_stats.hpp"
+
 namespace pisa {
 
 template <typename Collection>
@@ -74,19 +76,8 @@ void compress_index_streaming(
     bool check,
     std::string const& seq_type)
 {
-    uint64_t cantidad_integers_con_interpolative = 0,
-    cantidad_integers_sin_interpolative = 0,
-    dense_short = 0, dense_medium = 0, dense_large = 0, 
-    sparse_short = 0, sparse_medium = 0, sparse_large = 0,
-    dense_short_cost = 0, dense_medium_cost = 0, dense_large_cost = 0, 
-    sparse_short_cost = 0, sparse_medium_cost = 0, sparse_large_cost = 0,
-    cantidad_integers_con_interpolative_freq = 0,
-    cantidad_integers_sin_interpolative_freq = 0,
-    dense_short_freq = 0, dense_medium_freq = 0, dense_large_freq = 0, 
-    sparse_short_freq = 0, sparse_medium_freq = 0, sparse_large_freq = 0,
-    dense_short_cost_freq = 0, dense_medium_cost_freq = 0, dense_large_cost_freq = 0, 
-    sparse_short_cost_freq = 0, sparse_medium_cost_freq = 0, sparse_large_cost_freq = 0;
-    bool dense_sparse = false;
+    pvb::stats doc_stats(false,false);
+    pvb::stats freq_stats(false,false);
 
     spdlog::info("Processing {} documents (streaming)", input.num_docs());
     double tick = get_time_usecs();
@@ -111,19 +102,7 @@ void compress_index_streaming(
                 }
                 auto sum = std::accumulate(
                     quantized_scores.begin(), quantized_scores.end(), std::uint64_t(0));
-                builder.add_posting_list(size, plist.docs.begin(), quantized_scores.begin(), sum,
-                            dense_short, dense_medium, dense_large,
-                            sparse_short, sparse_medium, sparse_large,
-                            dense_short_cost, dense_medium_cost, dense_large_cost,
-                            sparse_short_cost, sparse_medium_cost, sparse_large_cost,
-                            cantidad_integers_con_interpolative,
-                            cantidad_integers_sin_interpolative,
-                            dense_short_freq, dense_medium_freq, dense_large_freq,
-                            sparse_short_freq, sparse_medium_freq, sparse_large_freq,
-                            dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
-                            sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
-                            cantidad_integers_con_interpolative_freq,
-                            cantidad_integers_sin_interpolative_freq, dense_sparse);
+                builder.add_posting_list(size, plist.docs.begin(), quantized_scores.begin(), sum, doc_stats, freq_stats);
                 term_id += 1;
                 quantized_scores.clear();
                 progress.update(1);
@@ -133,19 +112,7 @@ void compress_index_streaming(
                 size_t size = plist.docs.size();
                 uint64_t freqs_sum =
                     std::accumulate(plist.freqs.begin(), plist.freqs.begin() + size, uint64_t(0));
-                builder.add_posting_list(size, plist.docs.begin(), plist.freqs.begin(), freqs_sum,
-                            dense_short, dense_medium, dense_large,
-                            sparse_short, sparse_medium, sparse_large,
-                            dense_short_cost, dense_medium_cost, dense_large_cost,
-                            sparse_short_cost, sparse_medium_cost, sparse_large_cost,
-                            cantidad_integers_con_interpolative,
-                            cantidad_integers_sin_interpolative,
-                            dense_short_freq, dense_medium_freq, dense_large_freq,
-                            sparse_short_freq, sparse_medium_freq, sparse_large_freq,
-                            dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
-                            sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
-                            cantidad_integers_con_interpolative_freq,
-                            cantidad_integers_sin_interpolative_freq, dense_sparse);
+                builder.add_posting_list(size, plist.docs.begin(), plist.freqs.begin(), freqs_sum, doc_stats, freq_stats);
                 progress.update(1);
                 postings += size;
                 term_id += 1;
@@ -161,10 +128,10 @@ void compress_index_streaming(
         verify_collection<binary_freq_collection, CollectionType>(input, output_filename.c_str());
     }
 
-    std::cout << "\ncantidad_integers_con_interpolative docids: " << cantidad_integers_con_interpolative << std::endl;
-    std::cout << "cantidad_integers_sin_interpolative docids: " << cantidad_integers_sin_interpolative << std::endl;
-    std::cout << "total_integer docids: " << cantidad_integers_con_interpolative+cantidad_integers_sin_interpolative << std::endl;
-    std::cout << "cantidad_integers_con_interpolative * 100 / total_integers_sparse docids: " << (cantidad_integers_con_interpolative*100.0)/(cantidad_integers_con_interpolative+cantidad_integers_sin_interpolative) << std::endl;
+    std::cout << "\ncantidad_integers_con_interpolative docids: " << doc_stats.cantidad_integers_con_interpolative << std::endl;
+    std::cout << "cantidad_integers_sin_interpolative docids: " << doc_stats.cantidad_integers_sin_interpolative << std::endl;
+    std::cout << "total_integer docids: " << doc_stats.cantidad_integers_con_interpolative+doc_stats.cantidad_integers_sin_interpolative << std::endl;
+    std::cout << "cantidad_integers_con_interpolative * 100 / total_integers_sparse docids: " << (doc_stats.cantidad_integers_con_interpolative*100.0)/(doc_stats.cantidad_integers_con_interpolative+doc_stats.cantidad_integers_sin_interpolative) << std::endl;
 }
 
 // TODO(michal): Group parameters under a common `optional` so that, say, it is impossible to get
@@ -181,7 +148,8 @@ void compress_index(
     ScorerParams const& scorer_params,
     bool quantized,
     bool dense_sparse,
-    bool decompress
+    bool decompress,
+    bool interpolative
     )
 {
     if(decompress){
@@ -212,18 +180,8 @@ void compress_index(
             return;
         }
 
-        uint64_t cantidad_integers_con_interpolative = 0,
-        cantidad_integers_sin_interpolative = 0,
-        dense_short = 0, dense_medium = 0, dense_large = 0, 
-        sparse_short = 0, sparse_medium = 0, sparse_large = 0,
-        dense_short_cost = 0, dense_medium_cost = 0, dense_large_cost = 0, 
-        sparse_short_cost = 0, sparse_medium_cost = 0, sparse_large_cost = 0,
-        cantidad_integers_con_interpolative_freq = 0,
-        cantidad_integers_sin_interpolative_freq = 0,
-        dense_short_freq = 0, dense_medium_freq = 0, dense_large_freq = 0, 
-        sparse_short_freq = 0, sparse_medium_freq = 0, sparse_large_freq = 0,
-        dense_short_cost_freq = 0, dense_medium_cost_freq = 0, dense_large_cost_freq = 0, 
-        sparse_short_cost_freq = 0, sparse_medium_cost_freq = 0, sparse_large_cost_freq = 0;
+        pvb::stats doc_stats(dense_sparse,interpolative);
+        pvb::stats freq_stats(dense_sparse,interpolative);
 
         spdlog::info("Processing {} documents", input.num_docs());
         double tick = get_time_usecs();
@@ -266,35 +224,11 @@ void compress_index(
                     assert(quants.size() == size);
                     uint64_t quants_sum =
                         std::accumulate(quants.begin(), quants.begin() + quants.size(), uint64_t(0));
-                    builder.add_posting_list(size, plist.docs.begin(), quants.begin(), quants_sum,
-                                dense_short, dense_medium, dense_large,
-                                sparse_short, sparse_medium, sparse_large,
-                                dense_short_cost, dense_medium_cost, dense_large_cost,
-                                sparse_short_cost, sparse_medium_cost, sparse_large_cost,
-                                cantidad_integers_con_interpolative,
-                                cantidad_integers_sin_interpolative,
-                                dense_short_freq, dense_medium_freq, dense_large_freq,
-                                sparse_short_freq, sparse_medium_freq, sparse_large_freq,
-                                dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
-                                sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
-                                cantidad_integers_con_interpolative_freq,
-                                cantidad_integers_sin_interpolative_freq,dense_sparse);
+                    builder.add_posting_list(size, plist.docs.begin(), quants.begin(), quants_sum, doc_stats, freq_stats);
                 } else {
                     uint64_t freqs_sum =
                         std::accumulate(plist.freqs.begin(), plist.freqs.begin() + size, uint64_t(0));
-                    builder.add_posting_list(size, plist.docs.begin(), plist.freqs.begin(), freqs_sum,
-                                dense_short, dense_medium, dense_large,
-                                sparse_short, sparse_medium, sparse_large,
-                                dense_short_cost, dense_medium_cost, dense_large_cost,
-                                sparse_short_cost, sparse_medium_cost, sparse_large_cost,
-                                cantidad_integers_con_interpolative,
-                                cantidad_integers_sin_interpolative,
-                                dense_short_freq, dense_medium_freq, dense_large_freq,
-                                sparse_short_freq, sparse_medium_freq, sparse_large_freq,
-                                dense_short_cost_freq, dense_medium_cost_freq, dense_large_cost_freq,
-                                sparse_short_cost_freq, sparse_medium_cost_freq, sparse_large_cost_freq,
-                                cantidad_integers_con_interpolative_freq,
-                                cantidad_integers_sin_interpolative_freq,dense_sparse);
+                    builder.add_posting_list(size, plist.docs.begin(), plist.freqs.begin(), freqs_sum, doc_stats, freq_stats);
                 }
 
                 progress.update(1);
@@ -338,82 +272,82 @@ void compress_index(
             }
         }
 
-        if(dense_sparse){
+        if(doc_stats.dense_sparse){
         std::cout << "\nDOC-IDS: " << std::endl;
-        std::cout << "dense_short docids: " << dense_short << std::endl;
-        std::cout << "dense_medium docids: " << dense_medium << std::endl;
-        std::cout << "dense_large docids: " << dense_large << std::endl;
-        std::cout << "sparse_short docids: " << sparse_short << std::endl;
-        std::cout << "sparse_medium docids: " << sparse_medium << std::endl;
-        std::cout << "sparse_large docids: " << sparse_large << std::endl;
+        std::cout << "dense_short docids: " << doc_stats.dense_short << std::endl;
+        std::cout << "dense_medium docids: " << doc_stats.dense_medium << std::endl;
+        std::cout << "dense_large docids: " << doc_stats.dense_large << std::endl;
+        std::cout << "sparse_short docids: " << doc_stats.sparse_short << std::endl;
+        std::cout << "sparse_medium docids: " << doc_stats.sparse_medium << std::endl;
+        std::cout << "sparse_large docids: " << doc_stats.sparse_large << std::endl;
 
-        std::cout << "\nporcentaje dense_short docids: " << (dense_short*1.0) / ((dense_short+sparse_short)*1.0) << std::endl;
-        std::cout << "porcentaje sparse_short docids: " << (sparse_short*1.0) / ((dense_short+sparse_short)*1.0) << std::endl;
-        std::cout << "porcentaje dense_medium docids: " << (dense_medium*1.0) / ((dense_medium+sparse_medium)*1.0) << std::endl;
-        std::cout << "porcentaje sparse_medium docids: " << (sparse_medium*1.0) / ((dense_medium+sparse_medium)*1.0) << std::endl;
-        std::cout << "porcentaje dense_large docids: " << (dense_large*1.0) / ((dense_large+sparse_large)*1.0) << std::endl;
-        std::cout << "porcentaje sparse_large docids: " << (sparse_large*1.0) / ((dense_large+sparse_large)*1.0) << std::endl;
-        std::cout << "porcentaje short docids: " << ((dense_short+sparse_short)*1.0) / ((dense_short+sparse_short)*1.0+(dense_medium+sparse_medium)*1.0+(dense_large+sparse_large)*1.0) << std::endl;
-        std::cout << "porcentaje medium docids: " << ((dense_medium+sparse_medium)*1.0) / ((dense_short+sparse_short)*1.0+(dense_medium+sparse_medium)*1.0+(dense_large+sparse_large)*1.0) << std::endl;
-        std::cout << "porcentaje large docids: " << ((dense_large+sparse_large)*1.0) / ((dense_short+sparse_short)*1.0+(dense_medium+sparse_medium)*1.0+(dense_large+sparse_large)*1.0) << std::endl;
+        std::cout << "\nporcentaje dense_short docids: " << (doc_stats.dense_short*1.0) / ((doc_stats.dense_short+doc_stats.sparse_short)*1.0) << std::endl;
+        std::cout << "porcentaje sparse_short docids: " << (doc_stats.sparse_short*1.0) / ((doc_stats.dense_short+doc_stats.sparse_short)*1.0) << std::endl;
+        std::cout << "porcentaje dense_medium docids: " << (doc_stats.dense_medium*1.0) / ((doc_stats.dense_medium+doc_stats.sparse_medium)*1.0) << std::endl;
+        std::cout << "porcentaje sparse_medium docids: " << (doc_stats.sparse_medium*1.0) / ((doc_stats.dense_medium+doc_stats.sparse_medium)*1.0) << std::endl;
+        std::cout << "porcentaje dense_large docids: " << (doc_stats.dense_large*1.0) / ((doc_stats.dense_large+doc_stats.sparse_large)*1.0) << std::endl;
+        std::cout << "porcentaje sparse_large docids: " << (doc_stats.sparse_large*1.0) / ((doc_stats.dense_large+doc_stats.sparse_large)*1.0) << std::endl;
+        std::cout << "porcentaje short docids: " << ((doc_stats.dense_short+doc_stats.sparse_short)*1.0) / ((doc_stats.dense_short+doc_stats.sparse_short)*1.0+(doc_stats.dense_medium+doc_stats.sparse_medium)*1.0+(doc_stats.dense_large+doc_stats.sparse_large)*1.0) << std::endl;
+        std::cout << "porcentaje medium docids: " << ((doc_stats.dense_medium+doc_stats.sparse_medium)*1.0) / ((doc_stats.dense_short+doc_stats.sparse_short)*1.0+(doc_stats.dense_medium+doc_stats.sparse_medium)*1.0+(doc_stats.dense_large+doc_stats.sparse_large)*1.0) << std::endl;
+        std::cout << "porcentaje large docids: " << ((doc_stats.dense_large+doc_stats.sparse_large)*1.0) / ((doc_stats.dense_short+doc_stats.sparse_short)*1.0+(doc_stats.dense_medium+doc_stats.sparse_medium)*1.0+(doc_stats.dense_large+doc_stats.sparse_large)*1.0) << std::endl;
 
-        std::cout << "\ndense_short_cost_raw docids: " << dense_short_cost << std::endl;
-        std::cout << "dense_medium_cost_raw docids: " << dense_medium_cost << std::endl;
-        std::cout << "dense_large_cost_raw docids: " << dense_large_cost << std::endl;
-        std::cout << "sparse_short_cost_raw docids: " << sparse_short_cost << std::endl;
-        std::cout << "sparse_medium_cost_raw docids: " << sparse_medium_cost << std::endl;
-        std::cout << "sparse_large_cost_raw docids: " << sparse_large_cost << std::endl;
+        std::cout << "\ndense_short_cost_raw docids: " << doc_stats.dense_short_cost << std::endl;
+        std::cout << "dense_medium_cost_raw docids: " << doc_stats.dense_medium_cost << std::endl;
+        std::cout << "dense_large_cost_raw docids: " << doc_stats.dense_large_cost << std::endl;
+        std::cout << "sparse_short_cost_raw docids: " << doc_stats.sparse_short_cost << std::endl;
+        std::cout << "sparse_medium_cost_raw docids: " << doc_stats.sparse_medium_cost << std::endl;
+        std::cout << "sparse_large_cost_raw docids: " << doc_stats.sparse_large_cost << std::endl;
 
-        std::cout << "\ndense_short_cost docids: " << dense_short_cost*1.0/dense_short*1.0 << std::endl;
-        std::cout << "dense_medium_cost docids: " << dense_medium_cost*1.0/dense_medium*1.0 << std::endl;
-        std::cout << "dense_large_cost docids: " << dense_large_cost*1.0/dense_large*1.0 << std::endl;
-        std::cout << "sparse_short_cost docids: " << sparse_short_cost*1.0/sparse_short*1.0 << std::endl;
-        std::cout << "sparse_medium_cost docids: " << sparse_medium_cost*1.0/sparse_medium*1.0 << std::endl;
-        std::cout << "sparse_large_cost docids: " << sparse_large_cost*1.0/sparse_large*1.0 << std::endl;
+        std::cout << "\ndense_short_cost docids: " << doc_stats.dense_short_cost*1.0/doc_stats.dense_short*1.0 << std::endl;
+        std::cout << "dense_medium_cost docids: " << doc_stats.dense_medium_cost*1.0/doc_stats.dense_medium*1.0 << std::endl;
+        std::cout << "dense_large_cost docids: " << doc_stats.dense_large_cost*1.0/doc_stats.dense_large*1.0 << std::endl;
+        std::cout << "sparse_short_cost docids: " << doc_stats.sparse_short_cost*1.0/doc_stats.sparse_short*1.0 << std::endl;
+        std::cout << "sparse_medium_cost docids: " << doc_stats.sparse_medium_cost*1.0/doc_stats.sparse_medium*1.0 << std::endl;
+        std::cout << "sparse_large_cost docids: " << doc_stats.sparse_large_cost*1.0/doc_stats.sparse_large*1.0 << std::endl;
 
-        std::cout << "\ncantidad_integers_con_interpolative docids: " << cantidad_integers_con_interpolative << std::endl;
-        std::cout << "cantidad_integers_sin_interpolative docids: " << cantidad_integers_sin_interpolative << std::endl;
-        std::cout << "total_integers_sparse docids: " << sparse_short+sparse_medium+sparse_large << std::endl;
-        std::cout << "total_integers_dense docids: " << dense_short+dense_medium+dense_large << std::endl;
-        std::cout << "cantidad_integers_con_interpolative * 100 / total_integers docids: " << (cantidad_integers_con_interpolative*100.0)/(cantidad_integers_sin_interpolative) << std::endl;
+        std::cout << "\ncantidad_integers_con_interpolative docids: " << doc_stats.cantidad_integers_con_interpolative << std::endl;
+        std::cout << "cantidad_integers_sin_interpolative docids: " << doc_stats.cantidad_integers_sin_interpolative << std::endl;
+        std::cout << "total_integers_sparse docids: " << doc_stats.sparse_short+doc_stats.sparse_medium+doc_stats.sparse_large << std::endl;
+        std::cout << "total_integers_dense docids: " << doc_stats.dense_short+doc_stats.dense_medium+doc_stats.dense_large << std::endl;
+        std::cout << "cantidad_integers_con_interpolative * 100 / total_integers docids: " << (doc_stats.cantidad_integers_con_interpolative*100.0)/(doc_stats.cantidad_integers_sin_interpolative) << std::endl;
 
         std::cout << "\nFRECUENCIAS: " << std::endl;
-        std::cout << "dense_short freq: " << dense_short_freq << std::endl;
-        std::cout << "dense_medium freq: " << dense_medium_freq << std::endl;
-        std::cout << "dense_large freq: " << dense_large_freq << std::endl;
-        std::cout << "sparse_short freq: " << sparse_short_freq << std::endl;
-        std::cout << "sparse_medium freq: " << sparse_medium_freq << std::endl;
-        std::cout << "sparse_large freq: " << sparse_large_freq << std::endl;
+        std::cout << "dense_short freq: " << freq_stats.dense_short << std::endl;
+        std::cout << "dense_medium freq: " << freq_stats.dense_medium << std::endl;
+        std::cout << "dense_large freq: " << freq_stats.dense_large << std::endl;
+        std::cout << "sparse_short freq: " << freq_stats.sparse_short << std::endl;
+        std::cout << "sparse_medium freq: " << freq_stats.sparse_medium << std::endl;
+        std::cout << "sparse_large freq: " << freq_stats.sparse_large << std::endl;
 
-        std::cout << "\nporcentaje dense_short freq: " << (dense_short_freq*1.0) / ((dense_short_freq+sparse_short_freq)*1.0) << std::endl;
-        std::cout << "porcentaje sparse_short freq: " << (sparse_short_freq*1.0) / ((dense_short_freq+sparse_short_freq)*1.0) << std::endl;
-        std::cout << "porcentaje dense_medium freq: " << (dense_medium_freq*1.0) / ((dense_medium_freq+sparse_medium_freq)*1.0) << std::endl;
-        std::cout << "porcentaje sparse_medium freq: " << (sparse_medium_freq*1.0) / ((dense_medium_freq+sparse_medium_freq)*1.0) << std::endl;
-        std::cout << "porcentaje dense_large freq: " << (dense_large_freq*1.0) / ((dense_large_freq+sparse_large_freq)*1.0) << std::endl;
-        std::cout << "porcentaje sparse_large freq: " << (sparse_large_freq*1.0) / ((dense_large_freq+sparse_large_freq)*1.0) << std::endl;
-        std::cout << "porcentaje short freq: " << ((dense_short_freq+sparse_short_freq)*1.0) / ((dense_short_freq+sparse_short_freq)*1.0+(dense_medium_freq+sparse_medium_freq)*1.0+(dense_large_freq+sparse_large_freq)*1.0) << std::endl;
-        std::cout << "porcentaje medium freq: " << ((dense_medium_freq+sparse_medium_freq)*1.0) / ((dense_short_freq+sparse_short_freq)*1.0+(dense_medium_freq+sparse_medium_freq)*1.0+(dense_large_freq+sparse_large_freq)*1.0) << std::endl;
-        std::cout << "porcentaje large freq: " << ((dense_large_freq+sparse_large_freq)*1.0) / ((dense_short_freq+sparse_short_freq)*1.0+(dense_medium_freq+sparse_medium_freq)*1.0+(dense_large_freq+sparse_large_freq)*1.0) << std::endl;
+        std::cout << "\nporcentaje dense_short freq: " << (freq_stats.dense_short*1.0) / ((freq_stats.dense_short+freq_stats.sparse_short)*1.0) << std::endl;
+        std::cout << "porcentaje sparse_short freq: " << (freq_stats.sparse_short*1.0) / ((freq_stats.dense_short+freq_stats.sparse_short)*1.0) << std::endl;
+        std::cout << "porcentaje dense_medium freq: " << (freq_stats.dense_medium*1.0) / ((freq_stats.dense_medium+freq_stats.sparse_medium)*1.0) << std::endl;
+        std::cout << "porcentaje sparse_medium freq: " << (freq_stats.sparse_medium*1.0) / ((freq_stats.dense_medium+freq_stats.sparse_medium)*1.0) << std::endl;
+        std::cout << "porcentaje dense_large freq: " << (freq_stats.dense_large*1.0) / ((freq_stats.dense_large+freq_stats.sparse_large)*1.0) << std::endl;
+        std::cout << "porcentaje sparse_large freq: " << (freq_stats.sparse_large*1.0) / ((freq_stats.dense_large+freq_stats.sparse_large)*1.0) << std::endl;
+        std::cout << "porcentaje short freq: " << ((freq_stats.dense_short+freq_stats.sparse_short)*1.0) / ((freq_stats.dense_short+freq_stats.sparse_short)*1.0+(freq_stats.dense_medium+freq_stats.sparse_medium)*1.0+(freq_stats.dense_large+freq_stats.sparse_large)*1.0) << std::endl;
+        std::cout << "porcentaje medium freq: " << ((freq_stats.dense_medium+freq_stats.sparse_medium)*1.0) / ((freq_stats.dense_short+freq_stats.sparse_short)*1.0+(freq_stats.dense_medium+freq_stats.sparse_medium)*1.0+(freq_stats.dense_large+freq_stats.sparse_large)*1.0) << std::endl;
+        std::cout << "porcentaje large freq: " << ((freq_stats.dense_large+freq_stats.sparse_large)*1.0) / ((freq_stats.dense_short+freq_stats.sparse_short)*1.0+(freq_stats.dense_medium+freq_stats.sparse_medium)*1.0+(freq_stats.dense_large+freq_stats.sparse_large)*1.0) << std::endl;
 
-        std::cout << "\ndense_short_cost_raw freq: " << dense_short_cost_freq << std::endl;
-        std::cout << "dense_medium_cost_raw freq: " << dense_medium_cost_freq << std::endl;
-        std::cout << "dense_large_cost_raw freq: " << dense_large_cost_freq << std::endl;
-        std::cout << "sparse_short_cost_raw freq: " << sparse_short_cost_freq << std::endl;
-        std::cout << "sparse_medium_cost_raw freq: " << sparse_medium_cost_freq << std::endl;
-        std::cout << "sparse_large_cost_raw freq: " << sparse_large_cost_freq << std::endl;
+        std::cout << "\ndense_short_cost_raw freq: " << freq_stats.dense_short_cost << std::endl;
+        std::cout << "dense_medium_cost_raw freq: " << freq_stats.dense_medium_cost << std::endl;
+        std::cout << "dense_large_cost_raw freq: " << freq_stats.dense_large_cost << std::endl;
+        std::cout << "sparse_short_cost_raw freq: " << freq_stats.sparse_short_cost << std::endl;
+        std::cout << "sparse_medium_cost_raw freq: " << freq_stats.sparse_medium_cost << std::endl;
+        std::cout << "sparse_large_cost_raw freq: " << freq_stats.sparse_large_cost << std::endl;
 
-        std::cout << "\ndense_short_cost freq: " << dense_short_cost_freq*1.0/dense_short_freq*1.0 << std::endl;
-        std::cout << "dense_medium_cost freq: " << dense_medium_cost_freq*1.0/dense_medium_freq*1.0 << std::endl;
-        std::cout << "dense_large_cost freq: " << dense_large_cost_freq*1.0/dense_large_freq*1.0 << std::endl;
-        std::cout << "sparse_short_cost freq: " << sparse_short_cost_freq*1.0/sparse_short_freq*1.0 << std::endl;
-        std::cout << "sparse_medium_cost freq: " << sparse_medium_cost_freq*1.0/sparse_medium_freq*1.0 << std::endl;
-        std::cout << "sparse_large_cost freq: " << sparse_large_cost_freq*1.0/sparse_large_freq*1.0 << std::endl;
+        std::cout << "\ndense_short_cost freq: " << freq_stats.dense_short_cost*1.0/freq_stats.dense_short*1.0 << std::endl;
+        std::cout << "dense_medium_cost freq: " << freq_stats.dense_medium_cost*1.0/freq_stats.dense_medium*1.0 << std::endl;
+        std::cout << "dense_large_cost freq: " << freq_stats.dense_large_cost*1.0/freq_stats.dense_large*1.0 << std::endl;
+        std::cout << "sparse_short_cost freq: " << freq_stats.sparse_short_cost*1.0/freq_stats.sparse_short*1.0 << std::endl;
+        std::cout << "sparse_medium_cost freq: " << freq_stats.sparse_medium_cost*1.0/freq_stats.sparse_medium*1.0 << std::endl;
+        std::cout << "sparse_large_cost freq: " << freq_stats.sparse_large_cost*1.0/freq_stats.sparse_large*1.0 << std::endl;
 
-        std::cout << "\ncantidad_integers_con_interpolative freq: " << cantidad_integers_con_interpolative_freq << std::endl;
-        std::cout << "cantidad_integers_sin_interpolative freq: " << cantidad_integers_sin_interpolative_freq << std::endl;
-        std::cout << "total_integers_sparse freq: " << sparse_short_freq+sparse_medium_freq+sparse_large_freq << std::endl;
-        std::cout << "total_integers_dense freq: " << dense_short_freq+dense_medium_freq+dense_large_freq << std::endl;
-        std::cout << "cantidad_integers_con_interpolative * 100 / total_integers freq: " << (cantidad_integers_con_interpolative_freq*100.0)/(cantidad_integers_sin_interpolative_freq) << std::endl;
+        std::cout << "\ncantidad_integers_con_interpolative freq: " << freq_stats.cantidad_integers_con_interpolative << std::endl;
+        std::cout << "cantidad_integers_sin_interpolative freq: " << freq_stats.cantidad_integers_sin_interpolative << std::endl;
+        std::cout << "total_integers_sparse freq: " << freq_stats.sparse_short+freq_stats.sparse_medium+freq_stats.sparse_large << std::endl;
+        std::cout << "total_integers_dense freq: " << freq_stats.dense_short+freq_stats.dense_medium+freq_stats.dense_large << std::endl;
+        std::cout << "cantidad_integers_con_interpolative * 100 / total_integers freq: " << (freq_stats.cantidad_integers_con_interpolative*100.0)/(freq_stats.cantidad_integers_sin_interpolative) << std::endl;
         }
     }
 }
@@ -427,7 +361,8 @@ void compress(
     bool quantize,
     bool check,
     bool dense_sparse,
-    bool decompress)
+    bool decompress,
+    bool interpolative)
 {
     binary_freq_collection input(input_basename.c_str());
     global_parameters params;
@@ -449,7 +384,8 @@ void compress(
             scorer_params,                                                       \
             quantize,                                                            \
             dense_sparse,                                                        \
-            decompress);                                                         \
+            decompress,                                                          \
+            interpolative);                                                      \
         /**/
         BOOST_PP_SEQ_FOR_EACH(LOOP_BODY, _, PISA_INDEX_TYPES);
 #undef LOOP_BODY

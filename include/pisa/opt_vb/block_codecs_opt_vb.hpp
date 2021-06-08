@@ -517,11 +517,6 @@ namespace pvb
             //(void)sum_of_values;
             size_t size = n;
             uint32_t *src = const_cast<uint32_t *>(in);
-            
-            if (n < block_size) {
-                interpolative_block::encode(src, sum_of_values, n, out);
-                return;
-            }
             std::vector<uint8_t> buf(2 * size * sizeof(uint32_t));
             size_t out_len = vbyte_encode(src, size, buf.data());
             out.insert(out.end(), buf.data(), buf.data() + out_len);
@@ -531,9 +526,6 @@ namespace pvb
                                     uint32_t&, uint32_t size_partition, bool, bool)
         {
             //(void)sum_of_values;
-            if (PISA_UNLIKELY(size_partition < block_size)) {
-                return interpolative_block::decode(in, out, sum_of_values, n);
-            }
             auto read = masked_vbyte_decode(in, out, n);
             return in + read;
         }

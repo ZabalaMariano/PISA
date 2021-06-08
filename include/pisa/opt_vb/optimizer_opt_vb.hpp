@@ -1,6 +1,7 @@
 #pragma once
 
 #include "configuration.hpp"
+#include "./opt_vb/dense_sparse_stats.hpp"
 
 namespace pvb {
 
@@ -25,7 +26,7 @@ namespace pvb {
 
         template<typename Iterator>
         static std::vector<block<Iterator>>
-        compute_partition(Iterator begin, uint64_t n)//configuration_opt_vb const& conf)
+        compute_partition(Iterator begin, uint64_t n, stats& stats)//configuration_opt_vb const& conf)
         {
             assert(encoder1::type == 0 and
                    encoder2::type == 1);
@@ -102,7 +103,7 @@ namespace pvb {
                 }
             };
         
-            if(n<128){
+            if(stats.interpolative && n<128){
                 curr_block.type = 3;//*//encoder1::type;
                 curr_block.begin = end;
                 partition.push_back(curr_block);

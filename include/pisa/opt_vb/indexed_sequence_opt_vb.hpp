@@ -99,14 +99,16 @@ struct indexed_sequence_opt_vb {
                                 ((uint64_t(1) << type_bits) - 1));
 
             uint64_t pad = 0;
-            //*if ((m_type == third and is_byte_aligned<Encoder>::value) or
-            //    (m_type == ranked_bitvector and is_byte_aligned<Encoder2>::value)) {
+            if ((m_type == third and is_byte_aligned<Encoder>::value) or
+                (m_type == ranked_bitvector and is_byte_aligned<Encoder2>::value) or
+                (m_type == inter)
+                ) {
                 uint64_t mod = (offset + type_bits) % alignment;
                 if (mod) {
                     pad = alignment - mod;
                 }
                 assert((offset + type_bits + pad) % alignment == 0);
-            //}
+            }
 
             // params.blocks[m_type] += n;
 
